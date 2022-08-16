@@ -1,4 +1,4 @@
-# flutter_my_clipboard
+# my_clipboard
 
 A new Flutter project.
 
