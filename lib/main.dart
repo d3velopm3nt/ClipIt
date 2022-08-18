@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clipboard_watcher/clipboard_watcher.dart';
 
-import 'widgets/clip_item.dart';
+import 'services/file-service.dart';
+import 'ui/clip_item.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,13 +20,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Clip It - Monitor'),
+      home: MyHomePage(title: 'Clip It - Monitor'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -45,6 +46,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> with ClipboardListener {
   int _counter = 0;
   List<String> clips = [];
+    FileService fileService = FileService();
   @override
   void initState() {
     clipboardWatcher.addListener(this);
@@ -55,9 +57,16 @@ class _MyHomePageState extends State<MyHomePage> with ClipboardListener {
   void onClipboardChanged() async {
     ClipboardData? newClipboardData =
         await Clipboard.getData(Clipboard.kTextPlain);
-    print(newClipboardData?.text ?? "");
+    var newText = newClipboardData?.text ?? "";
+    if (newText != "" && !clips.contains(newText)) {
+      addNewClip(newText);
+    }
+  }
+
+  void addNewClip(String text) {
+    fileService.saveText(text);
     setState(() {
-      clips.add(newClipboardData?.text ?? "");
+      clips.add(text);
     });
   }
 
@@ -89,30 +98,40 @@ class _MyHomePageState extends State<MyHomePage> with ClipboardListener {
       body: Center(
           child: Column(
         children: [
-          ElevatedButton(
-            child: const Text('start'),
-            onPressed: () {
-              clipboardWatcher.start();
-            },
+          Center(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                child: const Text('start'),
+                onPressed: () {
+                  clipboardWatcher.start();
+                },
+            ),
+              ),
+            ElevatedButton(
+              child: const Text('stop'),
+              onPressed: () {
+                clipboardWatcher.stop();
+              },
+            ),
+              ],
+            ),
           ),
-          ElevatedButton(
-            child: const Text('stop'),
-            onPressed: () {
-              clipboardWatcher.stop();
-            },
-          ),
+         
           Expanded(
             child: ListView(
-              children: [...clips.map((clip) => ClipItem(copiedText: clip))]
-            ),
+                children: [...clips.map((clip) => ClipItem(copiedText: clip,datetime:DateTime.now().toString(),))]),
           )
         ],
       )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
