@@ -17,9 +17,6 @@ class AppSystemTray {
   final SystemTray _systemTray = SystemTray();
   final Menu _menuMain = Menu();
   final Menu _menuSimple = Menu();
-   bool _toogleTrayIcon = true;
-Timer? _timer;
-  bool _toogleMenu = true;
 
 
     Future<void> initSystemTray() async {

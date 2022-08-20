@@ -2,8 +2,8 @@ import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../models/clipitem.dart';
-import '../services/datetime-service.dart';
+import '../../models/clipitem.model.dart';
+import '../../services/datetime_service.dart';
 
 class ClipItemWidget extends StatelessWidget {
   final ClipItem clip;
@@ -13,6 +13,11 @@ class ClipItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       child: Card(
+         shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                shadowColor: Colors.blueAccent,
+                elevation: 2,
           margin:
               const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 0),
           child: Row(
@@ -44,8 +49,11 @@ class ClipItemWidget extends StatelessWidget {
                   child: SizedBox(
                     child: ExpandableText(clip.copiedText,
                         maxLines: 3,
-                        expandText: 'show more',
-                        collapseText: 'show less'),
+                        expandOnTextTap: true,
+                        collapseOnTextTap: true,
+                        expandText: '',
+                        collapseText: ''
+                        ),
                   ),
                 ),
               ),

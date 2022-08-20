@@ -39,6 +39,9 @@ dependencies:
   window_manager: ^0.2.5
   screen_retriever: ^0.1.2
   system_tray: ^2.0.1
+  hotkey_manager: ^0.1.7
+  settings_ui: ^2.0.2
+  provider: ^6.0.3
 
 dev_dependencies:
   flutter_test:

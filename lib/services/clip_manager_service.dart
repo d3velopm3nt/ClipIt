@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import '../models/clipitem.dart';
-import 'datetime-service.dart';
-import 'file-service.dart';
+import '../models/clipitem.model.dart';
+import 'datetime_service.dart';
+import 'file_service.dart';
 
 class ClipManager with FileService {
   List<ClipItem> clips = [];

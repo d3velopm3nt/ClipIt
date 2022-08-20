@@ -1,9 +1,9 @@
-import 'dart:ffi';
+
 
 class ClipItem {
   late String copiedText;
   late String datetime;
-  late Bool pinned;
+  late bool pinned;
   late List<String> tags;
 
   ClipItem(this.copiedText, this.datetime);
