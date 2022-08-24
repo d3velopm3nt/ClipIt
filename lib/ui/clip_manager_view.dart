@@ -4,15 +4,14 @@ import 'package:clipboard_watcher/clipboard_watcher.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:system_tray/system_tray.dart';
-import 'package:window_manager/window_manager.dart';
-import 'package:flutter_my_clipboard/app/app.navigation.dart';
-import 'package:flutter_my_clipboard/models/clipitem.model.dart';
+import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
-import 'package:flutter_my_clipboard/ui/widgets/clip_item_widget.dart';
+import '../navigation/clip.navigation.dart';
 import '../settings/services/setting_changer.dart';
+import 'widgets/clip_menu_item.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+class ClipManagerPage extends StatefulWidget {
+  const ClipManagerPage({Key? key}) : super(key: key);
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -24,25 +23,22 @@ class MyHomePage extends StatefulWidget {
   // always marked "final".
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<ClipManagerPage> createState() => _ClipManagerPageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> with ClipboardListener {
-  List<ClipItem> clips = [];
+class _ClipManagerPageState extends State<ClipManagerPage>
+    with ClipboardListener {
   IconData pinnedIcon = Icons.push_pin;
   String pinnedIconTooltip = "Pin To Top";
   List<LogicalKeyboardKey> keys = [];
-  final ClipManager _manager = ClipManager();
+  ClipManager _manager = ClipManager();
   @override
   void initState() {
     clipboardWatcher.addListener(this);
     clipboardWatcher.start();
     Future.delayed(Duration.zero, () async {
       await loadHotKey();
-      clips = await _manager.loadClips();
-      setState(() {
-        clips = clips;
-      });
+      await _manager.loadClips();
     });
     super.initState();
   }
@@ -70,34 +66,31 @@ class _MyHomePageState extends State<MyHomePage> with ClipboardListener {
     ClipboardData? newClipboardData =
         await Clipboard.getData(Clipboard.kTextPlain);
     var newText = newClipboardData?.text ?? "";
-    if (newText != "" && !clips.any((x) => x.copiedText == newText)) {
-      addNewClip(newText);
+    if (newText != "" && !_manager.clips.any((x) => x.copiedText == newText)) {
+      _manager.saveClip(newText);
+    } else if (newText != "") {
+      await _manager.updateClipDate(newText);
     }
   }
-
-  void addNewClip(String text) async {
-    var updatedClips = await _manager.saveClip(text);
-    setState(() {
-      clips = updatedClips;
-    });
-  }
+  
 
   openSettings() async {
-    await WindowManager.instance.setSize(const Size(500, 500));
-    WindowManager.instance.setTitleBarStyle(TitleBarStyle.normal);
-    await WindowManager.instance.setAlignment(Alignment.center);
-    Navigation.navigateToRoute(Routes.settings);
+    // await WindowManager.instance.setSize(const Size(500, 500));
+    // WindowManager.instance.setTitleBarStyle(TitleBarStyle.normal);
+    // await WindowManager.instance.setAlignment(Alignment.center);
+    AppNavigation.navigateToRoute(AppRoutes.settings);
   }
 
   @override
   Widget build(BuildContext context) {
     var settingsProvider = Provider.of<SettingChanger>(context);
+    _manager = Provider.of<ClipManager>(context);
     return Scaffold(
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: const Text('Clip It - v.0.0.0'),
-        toolbarHeight: 40.0, // add this line
+        toolbarHeight: 50.0, // add this line
         actions: <Widget>[
           IconButton(
               tooltip: settingsProvider.windowPinned.tooltip,
@@ -121,37 +114,43 @@ class _MyHomePageState extends State<MyHomePage> with ClipboardListener {
           )
         ],
       ),
-      body: Center(
-          child: Column(
+      body: Column(
         children: [
-          // Center(
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     children: [
-          //       // Padding(
-          //       //   padding: const EdgeInsets.all(8.0),
-          //       //   child: ElevatedButton(
-          //       //     child: const Text('start'),
-          //       //     onPressed: () {
-          //       //       clipboardWatcher.start();
-          //       //     },
-          //       //   ),
-          //       // ),
-          //       // ElevatedButton(
-          //       //   child: const Text('stop'),
-          //       //   onPressed: () {
-          //       //     clipboardWatcher.stop();
-          //       //   },
-          //       // ),
-          //     ],
-          //   ),
-          // ),
-          Expanded(
-            child: ListView(
-                children: [...clips.map((clip) => ClipItemWidget(clip: clip))]),
-          )
+          SizedBox(
+            height: 50,
+            width: MediaQuery.of(context).size.width,
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  ClipMenuItem(
+                      icon: Icons.search,
+                      onPressed: () {
+                        ClipNavigation.navigateToRoute(ClipRoutes.clipboard);
+                      }),
+                  ClipMenuItem(
+                      icon: Icons.calendar_month,
+                      onPressed: () {
+                        ClipNavigation.navigateToRoute(ClipRoutes.dates);
+                      }),
+                  ClipMenuItem(icon: Icons.tag, onPressed: () {}),
+                  ClipMenuItem(icon: Icons.favorite, onPressed: () {
+                        ClipNavigation.navigateToRoute(ClipRoutes.favorites);
+                      }),
+                ]),
+          ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height - 100,
+            width: MediaQuery.of(context).size.width,
+            child: Navigator(
+              key: ClipNavigation.nav,
+              initialRoute: '/clipboard',
+              onGenerateRoute: (RouteSettings route) =>
+                  ClipNavigation.navigationRoutes(route.name, route.arguments),
+            ),
+          ),
         ],
-      )),
+      ),
     );
   }
 }

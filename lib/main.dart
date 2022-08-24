@@ -4,7 +4,8 @@ import 'package:flutter_my_clipboard/theme/theme_changer.dart';
 import 'package:provider/provider.dart';
 import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
-import 'app/app.theme.dart';
+import 'services/clip_manager_service.dart';
+import 'theme/app.theme.dart';
 import 'settings/services/setting_changer.dart';
 import 'settings/services/setttings_service.dart';
 import 'ui/main_view.dart';
@@ -44,7 +45,8 @@ class App extends StatelessWidget {
     return MultiProvider(
          providers: [
         ChangeNotifierProvider(create: (_) => ThemeChanger(lightTheme)),
-        ChangeNotifierProvider(create:(_) => SettingChanger())
+        ChangeNotifierProvider(create:(_) => SettingChanger()),
+        ChangeNotifierProvider(create:(_) => ClipManager()),
       ],
       child: const AppTheme()
     );

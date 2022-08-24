@@ -13,6 +13,8 @@ class DateTimeService {
 
   static String getDate(String datetime) {
     DateTime dt = DateTime.parse(datetime);
-    return "${dt.year.toString()}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}";
+    var date =
+        "${dt.year.toString()}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}";
+    return date;
   }
 }

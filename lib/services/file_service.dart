@@ -1,7 +1,7 @@
 import 'dart:io';
 
 mixin FileService {
-  final String _localPath = "C://clip it/";
+  final String _localPath = "C://Clip It/";
 
   Future<File> get _localFile {
     final path = _localPath;

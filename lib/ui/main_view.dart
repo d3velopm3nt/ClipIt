@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../app/app.navigation.dart';
+import '../navigation/app.navigation.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({Key? key}) : super(key: key);
@@ -14,10 +14,10 @@ class _MainWindowState extends State<MainWindow> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Navigator(
-          key: Navigation.mainAppNav,
+          key: AppNavigation.nav,
           initialRoute: '/',
-          onGenerateRoute: (RouteSettings settings) =>
-              Navigation.navigationRoutes(settings.name, settings.arguments),
+          onGenerateRoute: (RouteSettings route) =>
+              AppNavigation.navigationRoutes(route.name, route.arguments),
         ),
     );
   }

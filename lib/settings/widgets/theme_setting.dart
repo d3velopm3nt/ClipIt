@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../../theme/theme_changer.dart';
-import 'title_desc_widget.dart';
+import '../../ui/widgets/title_desc_widget.dart';
 
 
 class ThemeSetting extends SettingsTile {

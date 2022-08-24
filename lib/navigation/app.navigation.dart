@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/clip_viewer.dart';
+import 'package:flutter_my_clipboard/ui/clip_manager_view.dart';
 
 import '../ui/settings_view.dart';
 
-class Navigation {
-  static GlobalKey<NavigatorState> mainAppNav = GlobalKey();
+class AppNavigation {
+  static GlobalKey<NavigatorState> nav = GlobalKey();
 
   static String previousRoute = "";
   static String currentRoute = "";
@@ -15,12 +15,12 @@ class Navigation {
     currentRoute = name!;
 
     switch (name) {
-      case Routes.settings:
+      case AppRoutes.settings:
         page = const SettingsPage();
         break;
-      case Routes.home:
+      case AppRoutes.home:
       default:
-        page = const MyHomePage();
+        page = const ClipManagerPage();
         break;
     }
 
@@ -31,15 +31,15 @@ class Navigation {
   }
 
     static previousPage() {
-    mainAppNav.currentState!.pushReplacementNamed(previousRoute);
+    nav.currentState!.pushReplacementNamed(previousRoute);
   }
 
   static navigateToRoute(String route, {Object? args}) {
-    mainAppNav.currentState!.pushNamed(route, arguments: args);
+    nav.currentState!.pushNamed(route, arguments: args);
   }
 }
 
-class Routes {
+class AppRoutes {
   static const String home = "/";
   static const String settings = "/settings";
 }

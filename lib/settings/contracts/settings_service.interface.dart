@@ -1,4 +1,4 @@
-import '../../models/settings.model.dart';
+import '../models/settings.model.dart';
 
 abstract class SettingsServiceInterface {
   Future<SettingsModel> loadSettings();
