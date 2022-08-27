@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_my_clipboard/app/app-notification.dart';
 import 'package:hive/hive.dart';
+import 'package:provider/provider.dart';
 
 import '../models/cliptag.model.dart';
 
@@ -12,7 +14,6 @@ class ClipTagService extends ChangeNotifier {
   loadTags() async {
     if (!Hive.isBoxOpen(tagBoxName)) {
       tagBox = await Hive.openBox<ClipTag>(tagBoxName);
-      //tagBox.deleteFromDisk();
     }
 
     _tags = List<ClipTag>.from(tagBox.values.toList());
@@ -35,9 +36,23 @@ class ClipTagService extends ChangeNotifier {
     }
   }
 
-  ClipTag getTagById(String id) {
-    var tag = _tags.where((element) => element.id == id);
+  ClipTag? getTagById(String id) {
+    try {
+      var tags = _tags.where((element) => element.id == id);
+      return tags.first;
+    } catch (error) {
+      return null;
+    }
+  }
 
-    return tag.first;
+  deleteTags() async {
+ await tagBox.clear();
+  }
+
+  deleteTag(ClipTag tag) async {
+    await tag.delete();
+    await loadTags();
+    AppNotification.deleteNotifcation(
+        "Tag Deleted", "tag will be removed from all clips");
   }
 }

@@ -3,19 +3,23 @@ import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../app/app-notification.dart';
 import '../../models/cliptag.model.dart';
 import '../../services/datetime_service.dart';
 import '../../theme/theme_changer.dart';
 import 'title_desc_widget.dart';
 
 class ClipTagSetup extends StatefulWidget {
-  const ClipTagSetup({Key? key, required this.onClosed}) : super(key: key);
   final Function(bool closed) onClosed;
+  ClipTag tag;
+  ClipTagSetup({Key? key, required this.onClosed, required this.tag})
+      : super(key: key);
   @override
   State<ClipTagSetup> createState() => _ClipTagSetupState();
 }
 
 class _ClipTagSetupState extends State<ClipTagSetup> {
+  String configType = "Add";
   final labelControl = TextEditingController();
   ClipTagService tagService = ClipTagService();
 
@@ -24,10 +28,21 @@ class _ClipTagSetupState extends State<ClipTagSetup> {
   bool isValid = false;
   bool saved = false;
   int saveAnimationDuration = 350;
+
+  @override
+  void initState() {
+    if (widget.tag.label != "") {
+      labelControl.text = widget.tag.label;
+      configType = "Edit";
+    }
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeChanger>(context);
     tagService = Provider.of<ClipTagService>(context);
+
     return Card(
         child: Center(
             child: Column(children: [
@@ -38,11 +53,11 @@ class _ClipTagSetupState extends State<ClipTagSetup> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Row(
-                children: const [
-                  Icon(Icons.tag),
+                children: [
+                  const Icon(Icons.local_offer_outlined),
                   TitleDesc(
-                    title: "Add Tag",
-                    titleStyle: TextStyle(fontSize: 17),
+                    title: "$configType Tag",
+                    titleStyle: const TextStyle(fontSize: 17),
                   ),
                 ],
               ),
@@ -115,8 +130,17 @@ class _ClipTagSetupState extends State<ClipTagSetup> {
   }
 
   saveTag() async {
-    var tag = ClipTag(labelControl.text, DateTimeService.currentDate, "",
-        const Uuid().v1());
-    await tagService.saveTag(tag);
+    var message = "";
+    if (configType == "Add") {
+      widget.tag = ClipTag(labelControl.text, DateTimeService.currentDate, "",
+          const Uuid().v1());
+      message = "New tag created successfully";
+    } else {
+      widget.tag.label = labelControl.text;
+      message = "Existing tag updated successefully";
+    }
+    await tagService.saveTag(widget.tag);
+
+    AppNotification.saveNotification("Tag details saved", message);
   }
 }

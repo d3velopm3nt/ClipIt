@@ -71,6 +71,7 @@ class _TagSelectorViewState extends State<TagSelectorView> {
                       ))
                 ],
               ),
+              Expanded(child: ListView(children: [
               ...tagManager.tags.map((tag) => TagSelectWidget(
                     tag: tag,
                     selected: widget.item.tags.contains(tag.id) ? true : false ,
@@ -78,6 +79,7 @@ class _TagSelectorViewState extends State<TagSelectorView> {
                       updateClipTags(tag, selected);
                     },
                   ))
+              ]),)
             ],
           ),
         ));

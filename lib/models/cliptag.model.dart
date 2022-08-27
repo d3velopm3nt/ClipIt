@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
 
 part 'cliptag.model.g.dart';
 

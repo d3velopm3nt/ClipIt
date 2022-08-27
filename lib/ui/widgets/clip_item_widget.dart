@@ -77,13 +77,15 @@ class ClipItemWidget extends StatelessWidget {
                           expandText: '',
                           collapseText: ''),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      child: Row(children: [
-                        Wrap(children: [
-                          ...clip.tags.map((id) =>
-                              TagBadgeWidget(tag: tagManager.getTagById(id)))
-                        ])
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Wrap(
+                        spacing: 1,
+                        alignment: WrapAlignment.start,
+                        //crossAxisAlignment: WrapCrossAlignment.start,
+                        children: [
+                        ...clip.tags.map((id) => 
+                            TagBadgeWidget(tag: tagManager.getTagById(id)))
                       ]),
                     ),
                   ]),
