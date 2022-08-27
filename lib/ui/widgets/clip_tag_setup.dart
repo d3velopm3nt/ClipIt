@@ -1,0 +1,122 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
+
+import '../../models/cliptag.model.dart';
+import '../../services/datetime_service.dart';
+import '../../theme/theme_changer.dart';
+import 'title_desc_widget.dart';
+
+class ClipTagSetup extends StatefulWidget {
+  const ClipTagSetup({Key? key, required this.onClosed}) : super(key: key);
+  final Function(bool closed) onClosed;
+  @override
+  State<ClipTagSetup> createState() => _ClipTagSetupState();
+}
+
+class _ClipTagSetupState extends State<ClipTagSetup> {
+  final labelControl = TextEditingController();
+  ClipTagService tagService = ClipTagService();
+
+  final colorControl = TextEditingController();
+
+  bool isValid = false;
+  bool saved = false;
+  int saveAnimationDuration = 350;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeChanger>(context);
+    tagService = Provider.of<ClipTagService>(context);
+    return Card(
+        child: Center(
+            child: Column(children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: const [
+                  Icon(Icons.tag),
+                  TitleDesc(
+                    title: "Add Tag",
+                    titleStyle: TextStyle(fontSize: 17),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                  splashRadius: 20,
+                  onPressed: () => {widget.onClosed(false)},
+                  icon: const Icon(Icons.close))),
+        ],
+      ),
+      //Tag List
+      Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: TextField(
+          onChanged: ((text) {
+            setState(() {
+              isValid = text != "" ? true : false;
+            });
+          }),
+          controller: labelControl,
+          decoration: const InputDecoration(
+              labelText: "Tag Label",
+              prefixIcon: Icon(Icons.label),
+              border: OutlineInputBorder(
+                  //Outline border type for TextFeild
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  borderSide: BorderSide(
+                    color: Color.fromARGB(255, 104, 99, 99),
+                    width: 3,
+                  ))),
+        ),
+      ),
+      Padding(
+        padding: const EdgeInsets.only(left: 15, top: 5, bottom: 15),
+        child: Align(
+            alignment: Alignment.centerLeft,
+            child: AnimatedAlign(
+              alignment: saved ? Alignment.centerRight : Alignment.centerLeft,
+              duration: Duration(milliseconds: saveAnimationDuration),
+              child: ElevatedButton(
+                  onPressed: () async {
+                    labelControl.text != ""
+                        ? {
+                            setState(() {
+                              saveTag();
+                              saved = true;
+                            }),
+                            await Future.delayed(
+                                Duration(milliseconds: saveAnimationDuration)),
+                            widget.onClosed(false)
+                          }
+                        : null;
+                  },
+                  style: ButtonStyle(
+                      foregroundColor: isValid
+                          ? MaterialStateProperty.all(Colors.black)
+                          : MaterialStateProperty.all(Colors.grey),
+                      backgroundColor: isValid
+                          ? MaterialStateProperty.all(
+                              theme.getTheme.secondaryHeaderColor)
+                          : MaterialStateProperty.all(
+                              const Color.fromARGB(255, 233, 227, 227))),
+                  child: const Text("Save")),
+            )),
+      )
+    ])));
+  }
+
+  saveTag() async {
+    var tag = ClipTag(labelControl.text, DateTimeService.currentDate, "",
+        const Uuid().v1());
+    await tagService.saveTag(tag);
+  }
+}

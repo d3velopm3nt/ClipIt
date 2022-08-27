@@ -9,4 +9,4 @@ ThemeData darkTheme = ThemeData(
 ThemeData lightTheme = ThemeData(
     secondaryHeaderColor: Colors.greenAccent[400],
     brightness: Brightness.light,
-    primaryColor: Colors.blue);
+    primaryColor: const Color.fromARGB(255, 159, 33, 243));

@@ -1,58 +1,81 @@
-import 'dart:convert';
-
+import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+import '../app/app-notification.dart';
 import '../models/clipitem.model.dart';
 import 'datetime_service.dart';
-import 'file_service.dart';
 
-class ClipManager extends ChangeNotifier with FileService {
+class ClipManager extends ChangeNotifier {
   List<ClipItem> _clips = [];
   List<ClipItem> get clips => _clips;
   List<ClipItem> _filteredList = [];
   List<ClipItem> get filteredList => _filteredList;
+  late Box clipBox;
+  final clipBoxName = "clipBox";
+
+  loadClipBox() async {
+    if (!Hive.isBoxOpen(clipBoxName)) {
+      clipBox = await Hive.openBox<ClipItem>(clipBoxName);
+    }
+
+    _clips = List<ClipItem>.from(clipBox.values.toList());
+  }
+
+  deleteClips() async {
+    await clipBox.clear();
+
+    await refreshClips();
+    AppNotification.deleteNotifcation(
+        'All Clips Deleted', "Now you need to copy everything again");
+  }
+
+  refreshClips() async {
+    await loadClipBox();
+    _filteredList = _clips.sortByLatestDate();
+    notifyListeners();
+  }
 
   saveClip(String text) async {
-    var clip = ClipItem(text, DateTimeService.currentDate);
-    clip.id = _clips.length + 1;
-    clip.favorite = false;
-    clip.tags = [];
-    _clips.add(clip);
-    await writeFile(jsonEncode(clips));
-    _clips = _clips.sortByLatestDate();
-    _filteredList = _clips;
-    notifyListeners();
+    var clip = ClipItem(
+        text, DateTimeService.currentDate, false, [], _clips.length + 1);
+    //Add to Hive Box
+    if (clipBox.containsKey(clip.key)) {
+      clip.save();
+    } else {
+      clipBox.add(clip);
+    }
+    await refreshClips();
   }
 
   updateClipDate(String text) async {
-    clips.firstWhere((clip) => text == clip.copiedText).datetime =
-        DateTimeService.currentDate;
-    await updateClips();
+    var clip = clips.firstWhere((clip) => text == clip.copiedText);
+    clip.datetime = DateTimeService.currentDate;
+    clip.save();
+    await refreshClips();
   }
 
   updateClipFavorite(ClipItem item) async {
-    clips.firstWhere((clip) => clip == item).favorite =
-        item.favorite == true ? false : true;
-    await updateClips();
+    var clip = clips.firstWhere((clip) => clip == item);
+    clip.favorite = clip.favorite == true ? false : true;
+    clip.save();
+    await refreshClips();
   }
 
-  updateClips() async {
-    await writeFile(jsonEncode(clips));
-    _clips = _clips.sortByLatestDate();
-    _filteredList = _clips;
-    notifyListeners();
+  updateClipTags(ClipItem item) async {
+    var clip = clips.firstWhere((clip) => clip.key == item.key);
+    clip.tags = item.tags;
+    clip.save();
+    await refreshClips();
+  }
+
+  deleteClip(ClipItem item) async {
+    item.delete();
+    await refreshClips();
   }
 
   loadClips() async {
-    var clipsText = await readFile();
-    if (clipsText == "") return _clips;
-    List<dynamic> clipsArr = json.decode(clipsText);
-    for (var clip in clipsArr) {
-      _clips.add(ClipItem.fromJson(clip));
-    }
-    _clips = _clips.sortByLatestDate();
-    _filteredList = _clips;
-    notifyListeners();
+    await refreshClips();
   }
 
   List<ClipItem> getByDate(DateTime date) {

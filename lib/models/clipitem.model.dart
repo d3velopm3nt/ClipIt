@@ -1,24 +1,21 @@
-class ClipItem {
-  late int id;
-  late String copiedText;
-  late String datetime;
-  late bool favorite = false;
-  late List<String> tags;
+import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
-  ClipItem(this.copiedText, this.datetime);
+part 'clipitem.model.g.dart';
 
-  ClipItem.fromJson(Map<String, dynamic> json)
-      : id = json['id'], 
-      copiedText = json['clipText'],
-        datetime = json['datetime'],
-        favorite = json['favorite'] ,
-        tags = json['tags'];
+@HiveType(typeId: 0,adapterName: "ClipItemAdapter")
+class ClipItem extends HiveObject {
+  @HiveField(0)
+   int id;
+  @HiveField(1)
+   String copiedText;
+  @HiveField(2)
+   String datetime;
+  @HiveField(3, defaultValue: false)
+   bool favorite;
+  @HiveField(4, defaultValue: [])
+   List<String> tags;
 
-  Map toJson() => {
-        'id': id,
-        'clipText': copiedText,
-        'datetime': datetime,
-        'favorite': favorite,
-        'tags': tags
-      };
+  ClipItem(this.copiedText, this.datetime,this.favorite,this.tags,this.id);
+
 }

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/settings/widgets/pin_window_setting.dart';
 import 'package:settings_ui/settings_ui.dart';
-import '../settings/widgets/theme_setting.dart';
+import '../../settings/widgets/clipboard_clear_setting.dart';
+import '../../settings/widgets/theme_setting.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
@@ -34,6 +35,12 @@ class _SettingsPageState extends State<SettingsPage> {
              PinWindowSetting()
             ],
           ),
+             SettingsSection(
+               title: const Text('Clipboard'),
+            tiles: <SettingsTile>[
+                ClipboardClearSetting()
+            ]
+            )
         ],
       ),
     );

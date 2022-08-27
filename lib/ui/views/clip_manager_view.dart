@@ -6,9 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:system_tray/system_tray.dart';
 import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
-import '../navigation/clip.navigation.dart';
-import '../settings/services/setting_changer.dart';
-import 'widgets/clip_menu_item.dart';
+import '../../navigation/clip.navigation.dart';
+import '../../services/clip_tag_service.dart';
+import '../../settings/services/setting_changer.dart';
+import '../widgets/clip_menu_item.dart';
 
 class ClipManagerPage extends StatefulWidget {
   const ClipManagerPage({Key? key}) : super(key: key);
@@ -32,6 +33,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
   String pinnedIconTooltip = "Pin To Top";
   List<LogicalKeyboardKey> keys = [];
   ClipManager _manager = ClipManager();
+  ClipTagService tagManager = ClipTagService();
   @override
   void initState() {
     clipboardWatcher.addListener(this);
@@ -39,6 +41,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     Future.delayed(Duration.zero, () async {
       await loadHotKey();
       await _manager.loadClips();
+
     });
     super.initState();
   }
@@ -72,7 +75,6 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       await _manager.updateClipDate(newText);
     }
   }
-  
 
   openSettings() async {
     // await WindowManager.instance.setSize(const Size(500, 500));
@@ -87,9 +89,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     _manager = Provider.of<ClipManager>(context);
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: const Text('Clip It - v.0.0.0'),
+        title: const Text('Clip It'),
         toolbarHeight: 50.0, // add this line
         actions: <Widget>[
           IconButton(
@@ -133,8 +133,14 @@ class _ClipManagerPageState extends State<ClipManagerPage>
                       onPressed: () {
                         ClipNavigation.navigateToRoute(ClipRoutes.dates);
                       }),
-                  ClipMenuItem(icon: Icons.tag, onPressed: () {}),
-                  ClipMenuItem(icon: Icons.favorite, onPressed: () {
+                  ClipMenuItem(
+                      icon: Icons.local_offer,
+                      onPressed: () {
+                        ClipNavigation.navigateToRoute(ClipRoutes.tags);
+                      }),
+                  ClipMenuItem(
+                      icon: Icons.favorite,
+                      onPressed: () {
                         ClipNavigation.navigateToRoute(ClipRoutes.favorites);
                       }),
                 ]),

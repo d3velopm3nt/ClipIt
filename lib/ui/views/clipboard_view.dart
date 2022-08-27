@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/clip_manager_service.dart';
-import 'widgets/clip_item_widget.dart';
+import '../../services/clip_manager_service.dart';
+import '../../services/clip_tag_service.dart';
+import '../widgets/clip_item_widget.dart';
 
-class ClipboardView extends StatelessWidget {
+class ClipboardView extends StatefulWidget {
   ClipboardView({Key? key}) : super(key: key);
+
+  @override
+  State<ClipboardView> createState() => _ClipboardViewState();
+}
+
+class _ClipboardViewState extends State<ClipboardView> {
   final searchController = TextEditingController();
+  ClipTagService tagManager = ClipTagService();
+    @override
+  void initState() {
+    Future.delayed(Duration.zero, () async {
+     await tagManager.loadTags();
+    });
+     super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     var manager = Provider.of<ClipManager>(context);
+    tagManager = Provider.of<ClipTagService>(context);
     return Center(
         child: Column(
       children: [

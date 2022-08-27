@@ -10,7 +10,6 @@ class SettingsService implements SettingsServiceInterface {
 
   @override
   Future<SettingsModel> loadSettings() {
-    // TODO: implement loadSettings
     throw UnimplementedError();
   }
 }

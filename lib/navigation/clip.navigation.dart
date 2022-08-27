@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/clip_collection_view.dart';
-import '../ui/clip_favorite_view.dart';
-import '../ui/clipboard_view.dart';
+import 'package:flutter_my_clipboard/ui/views/clip_collection_view.dart';
+import '../models/clipitem.model.dart';
+import '../ui/views/clip_favorite_view.dart';
+import '../ui/views/clip_tags_view.dart';
+import '../ui/views/clipboard_view.dart';
+import '../ui/views/tag_selection.view.dart';
 
 class ClipNavigation {
   static GlobalKey<NavigatorState> nav = GlobalKey();
@@ -21,6 +24,12 @@ class ClipNavigation {
       case ClipRoutes.favorites:
         page = const ClipFavoriteView();
         break;
+      case ClipRoutes.tags:
+        page = const ClipTagsView();
+        break;
+      case ClipRoutes.tagSelector:
+        page = TagSelectorView(item: args as ClipItem);
+        break;
       case ClipRoutes.clipboard:
       default:
         page = ClipboardView();
@@ -28,9 +37,21 @@ class ClipNavigation {
     }
 
     return PageRouteBuilder<dynamic>(
-        pageBuilder: (_, __, ___) => page,
+        pageBuilder: (context, animation, secondaryAnimation) => page,
         settings: RouteSettings(arguments: args),
-        transitionDuration: const Duration(seconds: 0));
+        transitionDuration: const Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          const begin = Offset(-1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeIn;
+          var tween =
+              Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        });
   }
 
   static previousPage() {
@@ -46,5 +67,6 @@ class ClipRoutes {
   static const String clipboard = "/board";
   static const String dates = "/calendar";
   static const String tags = "/tags";
+  static const String tagSelector = '/tag-selector';
   static const String favorites = "/favorites";
 }

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/theme/theme_changer.dart';
 import 'package:provider/provider.dart';
 
-import '../../theme/app.theme.dart';
-
 class ClipMenuItem extends StatelessWidget {
   final VoidCallback? onPressed;
   final IconData icon;
