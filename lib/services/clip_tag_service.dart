@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/app/app-notification.dart';
 import 'package:hive/hive.dart';
-import 'package:provider/provider.dart';
-
 import '../models/cliptag.model.dart';
 
 class ClipTagService extends ChangeNotifier {
@@ -12,8 +10,10 @@ class ClipTagService extends ChangeNotifier {
   List<ClipTag> get tags => _tags;
 
   loadTags() async {
+   
     if (!Hive.isBoxOpen(tagBoxName)) {
       tagBox = await Hive.openBox<ClipTag>(tagBoxName);
+     // await deleteTags();
     }
 
     _tags = List<ClipTag>.from(tagBox.values.toList());
@@ -36,17 +36,15 @@ class ClipTagService extends ChangeNotifier {
     }
   }
 
-  ClipTag? getTagById(String id) {
-    try {
-      var tags = _tags.where((element) => element.id == id);
-      return tags.first;
-    } catch (error) {
-      return null;
-    }
+  ClipTag getTagById(String id) {
+    var tags = _tags.where((element) => element.id == id);
+    return tags.first;
   }
 
   deleteTags() async {
- await tagBox.clear();
+    await tagBox.clear();
+    AppNotification.deleteNotifcation(
+        "All Tags Deleted", "There will be no more tags on your clipboard");
   }
 
   deleteTag(ClipTag tag) async {

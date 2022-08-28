@@ -67,9 +67,12 @@ class ClipItemWidget extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: Column(children: [
+                  child: Column(
+                    children: [
+                      //Copied Text
                     Padding(
-                      padding: const EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.only(
+                          top: 8, left: 2, bottom: 8, right: 2),
                       child: ExpandableText(clip.copiedText,
                           maxLines: 3,
                           expandOnTextTap: true,
@@ -77,16 +80,19 @@ class ClipItemWidget extends StatelessWidget {
                           expandText: '',
                           collapseText: ''),
                     ),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Wrap(
-                        spacing: 1,
-                        alignment: WrapAlignment.start,
-                        //crossAxisAlignment: WrapCrossAlignment.start,
-                        children: [
-                        ...clip.tags.map((id) => 
-                            TagBadgeWidget(tag: tagManager.getTagById(id)))
-                      ]),
+                    //Tag Bages
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: 0, left: 2, bottom: 8, right: 2),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Wrap(spacing: 1, alignment: WrapAlignment.start,
+                            //crossAxisAlignment: WrapCrossAlignment.start,
+                            children: [
+                              ...clip.tags.map((id) => TagBadgeWidget(
+                                  tag: tagManager.getTagById(id)))
+                            ]),
+                      ),
                     ),
                   ]),
                 ),
@@ -129,53 +135,74 @@ class ClipItemWidget extends StatelessWidget {
   }
 
   dropdownSideMenu() {
-    return PopupMenuButton<Menu>(
-      splashRadius:20,
-        // Callback that sets the selected popup menu item.
-        onSelected: (Menu item) {
-          switch (item) {
-            case Menu.tag:
-              ClipNavigation.navigateToRoute(ClipRoutes.tagSelector,
-                  args: clip);
-              break;
-            case Menu.favorite:
-              ClipNavigation.navigateToRoute(ClipRoutes.favorites);
-              break;
-            case Menu.group:
-              // TODO: Handle this case.
-              break;
-            case Menu.delete:
-              // TODO: Handle this case.
-              break;
-          }
-        },
-        itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
-              PopupMenuItem<Menu>(
-                value: Menu.favorite,
-                child: buildMenuItem('Favorite', Icons.favorite),
+    return Flexible(
+      child: Column(
+        children: [
+          PopupMenuButton<Menu>(
+              splashRadius: 20,
+              // Callback that sets the selected popup menu item.
+              onSelected: (Menu item) {
+                switch (item) {
+                  case Menu.tag:
+                    ClipNavigation.navigateToRoute(ClipRoutes.tagSelector,
+                        args: clip);
+                    break;
+                  case Menu.favorite:
+                    //ClipNavigation.navigateToRoute(ClipRoutes.saved);
+                    manager.updateClipFavorite(clip);
+                    break;
+                  case Menu.group:
+                    // TODO: Handle this case.
+                    break;
+                  case Menu.delete:
+                    // TODO: Handle this case.
+                    break;
+                }
+              },
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+                    PopupMenuItem<Menu>(
+                      value: Menu.favorite,
+                      child: buildMenuItem('Favorite', Icons.favorite, Colors.red),
+                    ),
+                    PopupMenuItem<Menu>(
+                      value: Menu.tag,
+                      child: buildMenuItem('Tags', Icons.local_offer_outlined, null),
+                    ),
+                    PopupMenuItem<Menu>(
+                      value: Menu.group,
+                      child: buildMenuItem('Group', Icons.group, null),
+                    ),
+                    PopupMenuItem<Menu>(
+                      value: Menu.delete,
+                      child: buildMenuItem('Delete', Icons.delete, null),
+                    ),
+                  ]),
+        Visibility(
+          visible: clip.favorite ? true : false,
+          child: IconButton(
+                icon: const Icon(Icons.favorite),
+                iconSize: 18,
+                splashRadius: 20,
+                color: clip.favorite == true
+                    ? Colors.red
+                    : theme.getTheme.iconTheme.color,
+                onPressed: () {
+                  manager.updateClipFavorite(clip);
+                },
               ),
-              PopupMenuItem<Menu>(
-                value: Menu.tag,
-                child: buildMenuItem('Tags', Icons.local_offer_outlined),
-              ),
-              PopupMenuItem<Menu>(
-                value: Menu.group,
-                child: buildMenuItem('Group', Icons.group),
-              ),
-              PopupMenuItem<Menu>(
-                value: Menu.delete,
-                child: buildMenuItem('Delete', Icons.delete),
-              ),
-            ]);
+        ),
+        ],
+      ),
+    );
   }
 
-  buildMenuItem(String name, IconData icon) {
+  buildMenuItem(String name, IconData icon, Color? iconColor) {
     return Row(children: [
       Padding(
-        padding: const EdgeInsets.only(right: 3),
-        child: Icon(icon),
+        padding: const EdgeInsets.only(right: 3, left: 5),
+        child: Icon(icon, color: iconColor ?? theme.getTheme.iconTheme.color),
       ),
-      Text(name)
+      Text(name, style: const TextStyle(fontSize: 15))
     ]);
   }
 

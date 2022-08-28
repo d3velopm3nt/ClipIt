@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/models/cliptag.model.dart';
-import 'package:flutter_my_clipboard/ui/widgets/confirm-dialog.dart';
-import 'package:flutter_my_clipboard/ui/widgets/title_desc_widget.dart';
+import 'package:flutter_my_clipboard/ui/widgets/shared/confirm_dialog.dart';
+import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/clipitem.model.dart';
@@ -50,7 +50,7 @@ class _TagCardState extends State<TagCard> {
         },
         borderRadius: BorderRadius.circular(8),
         hoverColor:
-            showClips ? theme.getTheme.cardColor : theme.getTheme.primaryColor,
+            showClips ? theme.getTheme.cardColor : widget.tag.color != 0 ? Color(widget.tag.color): theme.getTheme.primaryColor,
         mouseCursor: MaterialStateMouseCursor.clickable,
         child: Center(
           child: Column(
@@ -97,7 +97,7 @@ class _TagCardState extends State<TagCard> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: theme.getTheme.primaryColor),
+                          color: widget.tag.color != 0 ? Color(widget.tag.color): theme.getTheme.primaryColor),
                       child: Text(
                         clips.length.toString(),
                         style: const TextStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
+import 'package:flutter_my_clipboard/ui/widgets/shared/color_selector.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -7,7 +8,7 @@ import '../../app/app-notification.dart';
 import '../../models/cliptag.model.dart';
 import '../../services/datetime_service.dart';
 import '../../theme/theme_changer.dart';
-import 'title_desc_widget.dart';
+import 'shared/title_desc_widget.dart';
 
 class ClipTagSetup extends StatefulWidget {
   final Function(bool closed) onClosed;
@@ -34,6 +35,7 @@ class _ClipTagSetupState extends State<ClipTagSetup> {
     if (widget.tag.label != "") {
       labelControl.text = widget.tag.label;
       configType = "Edit";
+      isValid = true;
     }
     super.initState();
   }
@@ -94,6 +96,27 @@ class _ClipTagSetupState extends State<ClipTagSetup> {
         ),
       ),
       Padding(
+        padding:
+            const EdgeInsets.only(left: 10, right: 30, top: 10, bottom: 10),
+        child: Row(children: [
+          Expanded(
+              child: Row(children: const [
+            Icon(Icons.format_paint),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Select Tag Color'),
+            ),
+          ])),
+          ColorSelector(
+              onColorChanged: (Color color) {
+                widget.tag.color = color.value;
+              },
+              color: widget.tag.color != 0
+                  ? Color(widget.tag.color)
+                  : theme.getTheme.primaryColor)
+        ]),
+      ),
+      Padding(
         padding: const EdgeInsets.only(left: 15, top: 5, bottom: 15),
         child: Align(
             alignment: Alignment.centerLeft,
@@ -132,8 +155,9 @@ class _ClipTagSetupState extends State<ClipTagSetup> {
   saveTag() async {
     var message = "";
     if (configType == "Add") {
-      widget.tag = ClipTag(labelControl.text, DateTimeService.currentDate, "",
-          const Uuid().v1());
+      widget.tag.label = labelControl.text;
+      widget.tag.datetime = DateTimeService.currentDate;
+      widget.tag.id = const Uuid().v1();
       message = "New tag created successfully";
     } else {
       widget.tag.label = labelControl.text;

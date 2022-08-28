@@ -9,7 +9,7 @@ import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
 import '../../navigation/clip.navigation.dart';
 import '../../services/clip_tag_service.dart';
 import '../../settings/services/setting_changer.dart';
-import '../widgets/clip_menu_item.dart';
+import '../widgets/shared/app_menu_item.dart';
 
 class ClipManagerPage extends StatefulWidget {
   const ClipManagerPage({Key? key}) : super(key: key);
@@ -123,25 +123,25 @@ class _ClipManagerPageState extends State<ClipManagerPage>
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  ClipMenuItem(
+                  AppMenuItem(
                       icon: Icons.search,
                       onPressed: () {
                         ClipNavigation.navigateToRoute(ClipRoutes.clipboard);
                       }),
-                  ClipMenuItem(
-                      icon: Icons.calendar_month,
+                  AppMenuItem(
+                      icon: Icons.calendar_month,                      
                       onPressed: () {
                         ClipNavigation.navigateToRoute(ClipRoutes.dates);
                       }),
-                  ClipMenuItem(
+                  AppMenuItem(
                       icon: Icons.local_offer,
                       onPressed: () {
                         ClipNavigation.navigateToRoute(ClipRoutes.tags);
                       }),
-                  ClipMenuItem(
-                      icon: Icons.favorite,
+                  AppMenuItem(
+                      icon: Icons.bookmark,
                       onPressed: () {
-                        ClipNavigation.navigateToRoute(ClipRoutes.favorites);
+                        ClipNavigation.navigateToRoute(ClipRoutes.saved);
                       }),
                 ]),
           ),

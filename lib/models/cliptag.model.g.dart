@@ -19,7 +19,7 @@ class ClipTagAdapter extends TypeAdapter<ClipTag> {
     return ClipTag(
       fields[1] as String,
       fields[2] as String,
-      fields[3] as String,
+      fields[3] as int,
       fields[0] as String,
     );
   }

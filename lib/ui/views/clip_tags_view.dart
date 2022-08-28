@@ -17,7 +17,7 @@ class ClipTagsView extends StatefulWidget {
 class _ClipTagsViewState extends State<ClipTagsView> {
   bool showSetup = false;
   late ClipTagService tagManager;
-  ClipTag editTag = ClipTag("", "", "", "");
+  ClipTag editTag = ClipTag("", "", 0, "");
   @override
   void initState() {
     Future.delayed(Duration.zero, () async {
@@ -38,7 +38,7 @@ class _ClipTagsViewState extends State<ClipTagsView> {
                   child: AddNewTagWidget(
                     onPressed: () {
                       setState(() {
-                        editTag = ClipTag("", "", "", "");
+                        editTag = ClipTag("", "", 0, "");
                         showSetup = true;
                       });
                     },

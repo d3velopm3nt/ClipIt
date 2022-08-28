@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
@@ -17,7 +16,6 @@ class ClipManager extends ChangeNotifier {
   loadClipBox() async {
     if (!Hive.isBoxOpen(clipBoxName)) {
       clipBox = await Hive.openBox<ClipItem>(clipBoxName);
-      //deleteClips();
     }
 
     _clips = List<ClipItem>.from(clipBox.values.toList());
@@ -75,9 +73,9 @@ class ClipManager extends ChangeNotifier {
     await refreshClips();
   }
 
-  removeClipTags(String id) async  {
+  removeClipTags(String id) async {
     var clips = _clips.where((c) => c.tags.contains(id));
-    for (var clip in clips)  {
+    for (var clip in clips) {
       clip.tags.remove(id);
       await clip.save();
     }

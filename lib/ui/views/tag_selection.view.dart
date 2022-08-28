@@ -6,7 +6,7 @@ import '../../models/clipitem.model.dart';
 import '../../services/clip_manager_service.dart';
 import '../../services/clip_tag_service.dart';
 import '../widgets/tag_select_widget.dart';
-import '../widgets/title_desc_widget.dart';
+import '../widgets/shared/title_desc_widget.dart';
 
 class TagSelectorView extends StatefulWidget {
   final ClipItem item;

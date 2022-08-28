@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../services/datetime_service.dart';
-import 'title_desc_widget.dart';
+import 'shared/title_desc_widget.dart';
 import 'clip_item_widget.dart';
 
 class ClipCollection extends StatefulWidget {

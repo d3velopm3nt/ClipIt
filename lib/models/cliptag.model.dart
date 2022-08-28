@@ -11,7 +11,7 @@ class ClipTag extends HiveObject {
   @HiveField(2)
    String datetime;
   @HiveField(3)
-   String color;
+   int color;
 
   ClipTag(this.label, this.datetime,this.color,this.id);
 

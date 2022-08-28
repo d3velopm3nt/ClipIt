@@ -33,10 +33,9 @@ void main() async {
     await WindowManager.instance.setAsFrameless();
     var display = await screenRetriever.getPrimaryDisplay();
     await WindowManager.instance.setSize(Size(300, display.size.height - 40));
-    // await WindowManager.instance.setPosition(Offset(500, 300));
     await WindowManager.instance
         .setAlignment(Alignment.topRight, animate: true);
-    // WindowManager.instance.setAlwaysOnTop(true);
+    WindowManager.instance.setAlwaysOnTop(true);
     WindowManager.instance.setSkipTaskbar(true);
     WindowManager.instance.show();
   });
@@ -49,7 +48,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => ThemeChanger(lightTheme)),
+      ChangeNotifierProvider(create: (_) => ThemeChanger()),
       ChangeNotifierProvider(create: (_) => SettingChanger()),
       ChangeNotifierProvider(create: (_) => ClipManager()),
       ChangeNotifierProvider(create: (_) => ClipTagService())
@@ -64,7 +63,7 @@ class AppTheme extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Provider.of<ThemeChanger>(context);
     return MaterialApp(
-      builder: BotToastInit(), 
+      builder: BotToastInit(),
       navigatorObservers: [BotToastNavigatorObserver()],
       debugShowCheckedModeBanner: false,
       title: 'Clip It Desktop',

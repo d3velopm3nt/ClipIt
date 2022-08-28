@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/views/clip_collection_view.dart';
+import 'package:flutter_my_clipboard/ui/views/saved/saved_clips_view.dart';
 import '../models/clipitem.model.dart';
-import '../ui/views/clip_favorite_view.dart';
 import '../ui/views/clip_tags_view.dart';
 import '../ui/views/clipboard_view.dart';
 import '../ui/views/tag_selection.view.dart';
@@ -21,8 +21,8 @@ class ClipNavigation {
       case ClipRoutes.dates:
         page = const ClipCollectionView();
         break;
-      case ClipRoutes.favorites:
-        page = const ClipFavoriteView();
+      case ClipRoutes.saved:
+        page = SavedView();
         break;
       case ClipRoutes.tags:
         page = const ClipTagsView();
@@ -68,5 +68,5 @@ class ClipRoutes {
   static const String dates = "/calendar";
   static const String tags = "/tags";
   static const String tagSelector = '/tag-selector';
-  static const String favorites = "/favorites";
+  static const String saved = "/saved";
 }

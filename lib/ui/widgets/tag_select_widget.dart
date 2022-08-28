@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/widgets/title_desc_widget.dart';
+import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
 import 'package:provider/provider.dart';
 
 import '../../models/cliptag.model.dart';

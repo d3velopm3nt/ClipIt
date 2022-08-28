@@ -5,7 +5,7 @@ import '../../models/cliptag.model.dart';
 import '../../theme/theme_changer.dart';
 
 class TagBadgeWidget extends StatefulWidget {
-  final ClipTag? tag ;
+  final ClipTag tag ;
   TagBadgeWidget({Key? key, required this.tag}) : super(key: key);
 
   @override
@@ -25,14 +25,14 @@ class _TagBadgeWidgetState extends State<TagBadgeWidget> {
         //padding : const EdgeInsets.only(left: 10, right: 10),
         decoration: BoxDecoration(
           shape: BoxShape.rectangle,
-        color: theme.getTheme.primaryColor,
+        color: widget.tag.color != 0 ? Color(widget.tag.color): theme.getTheme.primaryColor,
           borderRadius: BorderRadius.circular(10),
         ),
         child: Padding(
           padding: const EdgeInsets.only(left: 10, right: 10, top: 2, bottom:0),
-          child: Text(widget.tag!.label,style: TextStyle(
+          child: Text(widget.tag.label,style: const TextStyle(
             fontSize: 11,
-            color: theme.getTheme.dialogBackgroundColor
+            //color: theme.getTheme.dialogBackgroundColor
           )),
         )
       ),
