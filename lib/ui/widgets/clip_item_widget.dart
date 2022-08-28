@@ -44,30 +44,35 @@ class ClipItemWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: [
-                      IconButton(
-                        onPressed: () {
-                          var snackBar = copyToClipboard();
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        },
-                        icon: const Icon(Icons.copy),
-                        splashRadius: 20,
-                        tooltip: 'Copy clip',
-                        iconSize: 16,
-                      ),
-                      Text(DateTimeService.getDate(clip.datetime),
-                          style: const TextStyle(
-                              fontSize: 11, color: Colors.grey)),
-                      Text(DateTimeService.getTime(clip.datetime),
-                          style: const TextStyle(fontSize: 13)),
-                    ],
+                Expanded(
+                  flex:  2,
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            var snackBar = copyToClipboard();
+                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                          },
+                          icon: const Icon(Icons.copy),
+                          splashRadius: 20,
+                          tooltip: 'Copy clip',
+                          iconSize: 16,
+                        ),
+                        Text(DateTimeService.getDate(clip.datetime),
+                            style: const TextStyle(
+                                fontSize: 11, color: Colors.grey)),
+                        Text(DateTimeService.getTime(clip.datetime),
+                            style: const TextStyle(fontSize: 13)),
+                      ],
+                    ),
                   ),
                 ),
-                Expanded(
+                  Expanded(
+                  flex: 4,
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //Copied Text
                     Padding(
