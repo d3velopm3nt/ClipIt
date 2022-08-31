@@ -48,6 +48,8 @@ dependencies:
   test: ^1.21.1
   bot_toast: ^4.0.3
   flutter_colorpicker: ^1.0.3
+  preference_list: ^0.0.1
+  leak_detector: ^1.0.1+4
   
 
 dev_dependencies:

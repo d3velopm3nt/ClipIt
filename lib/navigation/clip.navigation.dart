@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/views/clip_collection_view.dart';
-import 'package:flutter_my_clipboard/ui/views/saved/saved_clips_view.dart';
+import 'package:flutter_my_clipboard/ui/views/clip/clip_collection_view.dart';
+import 'package:flutter_my_clipboard/ui/views/saved/clip_favorite_view.dart';
+import '../ui/views/saved/hotkeys_view.dart';
 import '../models/clipitem.model.dart';
-import '../ui/views/clip_tags_view.dart';
-import '../ui/views/clipboard_view.dart';
-import '../ui/views/tag_selection.view.dart';
+import '../ui/views/clip/clip_tags_view.dart';
+import '../ui/views/clip/clipboard_view.dart';
+import '../ui/views/clip/tag_selection.view.dart';
 
 class ClipNavigation {
-  static GlobalKey<NavigatorState> nav = GlobalKey();
+  static final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
 
   static String previousRoute = "";
   static String currentRoute = "";
@@ -21,8 +22,11 @@ class ClipNavigation {
       case ClipRoutes.dates:
         page = const ClipCollectionView();
         break;
-      case ClipRoutes.saved:
-        page = SavedView();
+      case SavedRoutes.favorites:
+        page = const ClipFavoriteView();
+        break;
+      case SavedRoutes.hotkeys:
+        page = const HotkeysView();
         break;
       case ClipRoutes.tags:
         page = const ClipTagsView();
@@ -39,7 +43,7 @@ class ClipNavigation {
     return PageRouteBuilder<dynamic>(
         pageBuilder: (context, animation, secondaryAnimation) => page,
         settings: RouteSettings(arguments: args),
-        transitionDuration: const Duration(milliseconds: 500),
+        transitionDuration: const Duration(milliseconds: 200),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           const begin = Offset(-1.0, 0.0);
           const end = Offset.zero;
@@ -55,7 +59,7 @@ class ClipNavigation {
   }
 
   static previousPage() {
-    nav.currentState!.pushReplacementNamed(previousRoute);
+    nav.currentState!.popAndPushNamed(previousRoute);
   }
 
   static navigateToRoute(String route, {Object? args}) {
@@ -68,5 +72,11 @@ class ClipRoutes {
   static const String dates = "/calendar";
   static const String tags = "/tags";
   static const String tagSelector = '/tag-selector';
-  static const String saved = "/saved";
+}
+
+class SavedRoutes {
+  static const String favorites = "/saved/favorites";
+  static const String groups = "/saved/groups";
+  static const String hotkeys = "/saved/hotkeys";
+  static const String chain = "/saved/chain";
 }

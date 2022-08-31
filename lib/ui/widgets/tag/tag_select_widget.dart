@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/cliptag.model.dart';
-import '../../theme/theme_changer.dart';
+import '../../../models/cliptag.model.dart';
+import '../../../theme/theme_changer.dart';
 
 class TagSelectWidget extends StatefulWidget {
   TagSelectWidget({Key? key, required this.tag, required this.onSelected, required this.selected})

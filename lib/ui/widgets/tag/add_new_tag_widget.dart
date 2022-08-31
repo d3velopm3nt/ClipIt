@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../theme/theme_changer.dart';
-import 'shared/title_desc_widget.dart';
+import '../../../theme/theme_changer.dart';
+import '../shared/title_desc_widget.dart';
 
 class AddNewTagWidget extends StatelessWidget {
   final Function() onPressed;

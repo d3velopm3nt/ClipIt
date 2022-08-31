@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/views/clip_manager_view.dart';
+import 'package:flutter_my_clipboard/ui/views/clip/clip_manager_view.dart';
 
 import '../ui/views/settings_view.dart';
 
 class AppNavigation {
-  static GlobalKey<NavigatorState> nav = GlobalKey();
+  static final GlobalKey<NavigatorState> nav =  GlobalKey<NavigatorState>();
 
   static String previousRoute = "";
   static String currentRoute = "";

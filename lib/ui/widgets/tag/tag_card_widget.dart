@@ -4,11 +4,11 @@ import 'package:flutter_my_clipboard/ui/widgets/shared/confirm_dialog.dart';
 import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/clipitem.model.dart';
-import '../../services/clip_manager_service.dart';
-import '../../services/clip_tag_service.dart';
-import '../../theme/theme_changer.dart';
-import 'clip_item_widget.dart';
+import '../../../models/clipitem.model.dart';
+import '../../../services/clip_manager_service.dart';
+import '../../../services/clip_tag_service.dart';
+import '../../../theme/theme_changer.dart';
+import '../clip/clip_item_widget.dart';
 
 class TagCard extends StatefulWidget {
   final ClipTag tag;

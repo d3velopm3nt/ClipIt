@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/widgets/clip-collection_wiget.dart';
+import 'package:flutter_my_clipboard/ui/widgets/clip/clip-collection_wiget.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/clip_manager_service.dart';
-import '../widgets/clip_item_widget.dart';
+import '../../../services/clip_manager_service.dart';
+import '../../widgets/clip/clip_item_widget.dart';
 
 class ClipCollectionView extends StatelessWidget {
   const ClipCollectionView({Key? key}) : super(key: key);

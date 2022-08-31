@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
-import 'package:flutter_my_clipboard/ui/widgets/clip_tag_setup.dart';
+import 'package:flutter_my_clipboard/ui/widgets/tag/clip_tag_setup.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/cliptag.model.dart';
-import '../widgets/add_new_tag_widget.dart';
-import '../widgets/tag_card_widget.dart';
+import '../../../models/cliptag.model.dart';
+import '../../widgets/tag/add_new_tag_widget.dart';
+import '../../widgets/tag/tag_card_widget.dart';
 
 class ClipTagsView extends StatefulWidget {
   const ClipTagsView({Key? key}) : super(key: key);

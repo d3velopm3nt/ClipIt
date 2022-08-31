@@ -1,21 +1,22 @@
 import 'package:hive/hive.dart';
-import 'package:uuid/uuid.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
 
 part 'clipitem.model.g.dart';
 
-@HiveType(typeId: 0,adapterName: "ClipItemAdapter")
+@HiveType(typeId: 0, adapterName: "ClipItemAdapter")
 class ClipItem extends HiveObject {
   @HiveField(0)
-   int id;
+  int id;
   @HiveField(1)
-   String copiedText;
+  String copiedText;
   @HiveField(2)
-   String datetime;
+  String datetime;
   @HiveField(3, defaultValue: false)
-   bool favorite;
+  bool favorite;
   @HiveField(4, defaultValue: [])
-   List<String> tags;
+  List<String> tags;
+  @HiveField(5)
+  HotKey? hotKey;
 
-  ClipItem(this.copiedText, this.datetime,this.favorite,this.tags,this.id);
-
+  ClipItem(this.copiedText, this.datetime, this.favorite, this.tags, this.id);
 }

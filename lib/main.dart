@@ -8,19 +8,20 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 import 'models/clipitem.model.dart';
 import 'models/cliptag.model.dart';
+import 'navigation/navigation_manager.dart';
 import 'services/clip_manager_service.dart';
-import 'theme/app.theme.dart';
+import 'services/hotkey_service.dart';
 import 'settings/services/setting_changer.dart';
 import 'ui/views/main_view.dart';
-import 'ui/widgets/app_system_tray.dart';
-
+import 'ui/widgets/shared/app_system_tray.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Start Hive
   Hive.initFlutter();
   Hive.registerAdapter(ClipItemAdapter());
   Hive.registerAdapter(ClipTagAdapter());
-  // Ensure Windows Manager is initialized
+  
+  // Ensure Windows  Manager is initialized
   await WindowManager.instance.ensureInitialized();
   runApp(const App());
   AppSystemTray tray = AppSystemTray();
@@ -35,7 +36,6 @@ void main() async {
     await WindowManager.instance.setSize(Size(300, display.size.height - 40));
     await WindowManager.instance
         .setAlignment(Alignment.topRight, animate: true);
-    WindowManager.instance.setAlwaysOnTop(true);
     WindowManager.instance.setSkipTaskbar(true);
     WindowManager.instance.show();
   });
@@ -51,7 +51,9 @@ class App extends StatelessWidget {
       ChangeNotifierProvider(create: (_) => ThemeChanger()),
       ChangeNotifierProvider(create: (_) => SettingChanger()),
       ChangeNotifierProvider(create: (_) => ClipManager()),
-      ChangeNotifierProvider(create: (_) => ClipTagService())
+      ChangeNotifierProvider(create: (_) => ClipTagService()),
+      ChangeNotifierProvider(create: (_) => NavigationManager()),
+      ChangeNotifierProvider(create: (_) => HotKeyService()),
     ], child: const AppTheme());
   }
 }

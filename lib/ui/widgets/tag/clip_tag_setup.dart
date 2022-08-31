@@ -4,11 +4,11 @@ import 'package:flutter_my_clipboard/ui/widgets/shared/color_selector.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../app/app-notification.dart';
-import '../../models/cliptag.model.dart';
-import '../../services/datetime_service.dart';
-import '../../theme/theme_changer.dart';
-import 'shared/title_desc_widget.dart';
+import '../../../app/app.notification.dart';
+import '../../../models/cliptag.model.dart';
+import '../../../services/datetime_service.dart';
+import '../../../theme/theme_changer.dart';
+import '../shared/title_desc_widget.dart';
 
 class ClipTagSetup extends StatefulWidget {
   final Function(bool closed) onClosed;

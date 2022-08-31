@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clipboard_watcher/clipboard_watcher.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
-import 'package:system_tray/system_tray.dart';
 import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
-import '../../navigation/clip.navigation.dart';
-import '../../services/clip_tag_service.dart';
-import '../../settings/services/setting_changer.dart';
-import '../widgets/shared/app_menu_item.dart';
+import '../../../app/app.loadtest.dart';
+import '../../../navigation/clip.navigation.dart';
+import '../../../navigation/navigation_manager.dart';
+import '../../../services/clip_tag_service.dart';
+import '../../../settings/services/setting_changer.dart';
+import '../saved/saved_menu.dart';
+import 'clip_menu.dart';
 
 class ClipManagerPage extends StatefulWidget {
   const ClipManagerPage({Key? key}) : super(key: key);
@@ -34,34 +36,19 @@ class _ClipManagerPageState extends State<ClipManagerPage>
   List<LogicalKeyboardKey> keys = [];
   ClipManager _manager = ClipManager();
   ClipTagService tagManager = ClipTagService();
+  HotKeyService hotKeyService = HotKeyService();
   @override
   void initState() {
     clipboardWatcher.addListener(this);
     clipboardWatcher.start();
     Future.delayed(Duration.zero, () async {
-      await loadHotKey();
+      await hotKeyService.load();
       await _manager.loadClips();
-
+      //Load Test
+     // await AppLoadTest.copyToClipboard('TEST', 50);
+      
     });
     super.initState();
-  }
-
-  Future<void> loadHotKey() async {
-    final AppWindow appWindow = AppWindow();
-    await hotKeyManager.unregisterAll();
-    // ⌥ + Q
-    HotKey hotKey = HotKey(
-      KeyCode.keyC,
-      modifiers: [KeyModifier.alt],
-      // Set hotkey scope (default is HotKeyScope.system)
-      scope: HotKeyScope.system, // Set as inapp-wide hotkey.
-    );
-    await hotKeyManager.register(
-      hotKey,
-      keyDownHandler: (hotKey) {
-        appWindow.show();
-      },
-    );
   }
 
   @override
@@ -86,10 +73,20 @@ class _ClipManagerPageState extends State<ClipManagerPage>
   @override
   Widget build(BuildContext context) {
     var settingsProvider = Provider.of<SettingChanger>(context);
+    final navigation = Provider.of<NavigationManager>(context);
     _manager = Provider.of<ClipManager>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Clip It'),
+        title: navigation.isNavMain
+            ? const Text('Clip It')
+            : Row(children: [
+                IconButton(
+                    onPressed: () {
+                      navigation.changeNav(NavRoutes.main);
+                    },
+                    icon: const Icon(Icons.arrow_back)),
+                const Text("Saved")
+              ]),
         toolbarHeight: 50.0, // add this line
         actions: <Widget>[
           IconButton(
@@ -116,35 +113,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: 50,
-            width: MediaQuery.of(context).size.width,
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  AppMenuItem(
-                      icon: Icons.search,
-                      onPressed: () {
-                        ClipNavigation.navigateToRoute(ClipRoutes.clipboard);
-                      }),
-                  AppMenuItem(
-                      icon: Icons.calendar_month,                      
-                      onPressed: () {
-                        ClipNavigation.navigateToRoute(ClipRoutes.dates);
-                      }),
-                  AppMenuItem(
-                      icon: Icons.local_offer,
-                      onPressed: () {
-                        ClipNavigation.navigateToRoute(ClipRoutes.tags);
-                      }),
-                  AppMenuItem(
-                      icon: Icons.bookmark,
-                      onPressed: () {
-                        ClipNavigation.navigateToRoute(ClipRoutes.saved);
-                      }),
-                ]),
-          ),
+          navigation.isNavMain ? ClipMenu() : SavedMenu(),
           SizedBox(
             height: MediaQuery.of(context).size.height - 100,
             width: MediaQuery.of(context).size.width,

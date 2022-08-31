@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import '../app/app-notification.dart';
+import '../app/app.notification.dart';
 import '../models/clipitem.model.dart';
 import 'datetime_service.dart';
 
@@ -19,6 +19,7 @@ class ClipManager extends ChangeNotifier {
     }
 
     _clips = List<ClipItem>.from(clipBox.values.toList());
+
   }
 
   deleteClips() async {
@@ -54,17 +55,17 @@ class ClipManager extends ChangeNotifier {
     await refreshClips();
   }
 
-  updateClipFavorite(ClipItem item) async {
-    var clip = clips.firstWhere((clip) => clip == item);
-    clip.favorite = clip.favorite == true ? false : true;
-    clip.save();
+
+
+  updateClip(ClipItem item) async {
+    item.save();
     await refreshClips();
   }
 
   updateClipTags(ClipItem item) async {
-    var clip = clips.firstWhere((clip) => clip.key == item.key);
-    clip.tags = item.tags;
-    clip.save();
+    // var clip = clips.firstWhere((clip) => clip.key == item.key);
+    // clip.tags = item.tags;
+    item.save();
     await refreshClips();
   }
 

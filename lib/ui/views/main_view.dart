@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:leak_detector/leak_detector.dart';
 import '../../navigation/app.navigation.dart';
+import '../../navigation/clip.navigation.dart';
 
 class MainWindow extends StatefulWidget {
   const MainWindow({Key? key}) : super(key: key);
@@ -9,6 +11,7 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
+ bool _checking = false;
 
 
   @override

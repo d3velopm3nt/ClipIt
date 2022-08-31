@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../services/clip_manager_service.dart';
+import '../../../services/clip_manager_service.dart';
 
 class ClipSearch extends StatelessWidget {
   final searchController = TextEditingController();

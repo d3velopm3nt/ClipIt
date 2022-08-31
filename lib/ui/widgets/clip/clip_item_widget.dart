@@ -1,17 +1,19 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
-import '../../models/clipitem.model.dart';
-import '../../navigation/clip.navigation.dart';
-import '../../services/clip_manager_service.dart';
-import '../../services/clip_tag_service.dart';
-import '../../services/datetime_service.dart';
-import '../../theme/theme_changer.dart';
-import 'tag_badge_widget.dart';
+import '../../../models/clipitem.model.dart';
+import '../../../navigation/clip.navigation.dart';
+import '../../../services/clip_manager_service.dart';
+import '../../../services/clip_tag_service.dart';
+import '../../../services/datetime_service.dart';
+import '../../../theme/theme_changer.dart';
+import '../shared/record_hotkey_dialog.dart';
+import '../tag/tag_badge_widget.dart';
 
 // This is the type used by the popup menu below.
-enum Menu { favorite, tag, group, delete }
+enum Menu { favorite, tag, group, delete, hotkey }
 
 class ClipItemWidget extends StatelessWidget {
   final ClipItem clip;
@@ -20,6 +22,7 @@ class ClipItemWidget extends StatelessWidget {
 
   late ClipManager manager;
   late ThemeChanger theme;
+  late HotKeyService hotkeyService;
   @override
   Widget build(BuildContext context) {
     manager = Provider.of<ClipManager>(context);
@@ -45,7 +48,7 @@ class ClipItemWidget extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  flex:  2,
+                  flex: 2,
                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
@@ -53,7 +56,8 @@ class ClipItemWidget extends StatelessWidget {
                         IconButton(
                           onPressed: () {
                             var snackBar = copyToClipboard();
-                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
                           },
                           icon: const Icon(Icons.copy),
                           splashRadius: 20,
@@ -69,39 +73,41 @@ class ClipItemWidget extends StatelessWidget {
                     ),
                   ),
                 ),
-                  Expanded(
+                Expanded(
                   flex: 4,
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      //Copied Text
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 8, left: 2, bottom: 8, right: 2),
-                      child: ExpandableText(clip.copiedText,
-                          maxLines: 3,
-                          expandOnTextTap: true,
-                          collapseOnTextTap: true,
-                          expandText: '',
-                          collapseText: ''),
-                    ),
-                    //Tag Bages
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: 0, left: 2, bottom: 8, right: 2),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Wrap(spacing: 1, alignment: WrapAlignment.start,
-                            //crossAxisAlignment: WrapCrossAlignment.start,
-                            children: [
-                              ...clip.tags.map((id) => TagBadgeWidget(
-                                  tag: tagManager.getTagById(id)))
-                            ]),
-                      ),
-                    ),
-                  ]),
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Copied Text
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8, left: 2, bottom: 8, right: 2),
+                          child: ExpandableText(clip.copiedText,
+                              maxLines: 3,
+                              expandOnTextTap: true,
+                              collapseOnTextTap: true,
+                              expandText: '',
+                              collapseText: ''),
+                        ),
+                        //Tag Bages
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 0, left: 2, bottom: 8, right: 2),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Wrap(
+                                spacing: 1,
+                                alignment: WrapAlignment.start,
+                                //crossAxisAlignment: WrapCrossAlignment.start,
+                                children: [
+                                  ...clip.tags.map((id) => TagBadgeWidget(
+                                      tag: tagManager.getTagById(id)))
+                                ]),
+                          ),
+                        ),
+                      ]),
                 ),
-                dropdownSideMenu()
+                dropdownSideMenu(context)
               ],
             ),
           ],
@@ -121,7 +127,7 @@ class ClipItemWidget extends StatelessWidget {
                 ? Colors.red
                 : theme.getTheme.iconTheme.color,
             onPressed: () {
-              manager.updateClipFavorite(clip);
+              updateFavorite();
             },
           ),
           IconButton(
@@ -139,7 +145,7 @@ class ClipItemWidget extends StatelessWidget {
     );
   }
 
-  dropdownSideMenu() {
+  dropdownSideMenu(BuildContext context) {
     return Flexible(
       child: Column(
         children: [
@@ -153,8 +159,10 @@ class ClipItemWidget extends StatelessWidget {
                         args: clip);
                     break;
                   case Menu.favorite:
-                    //ClipNavigation.navigateToRoute(ClipRoutes.saved);
-                    manager.updateClipFavorite(clip);
+                    updateFavorite();
+                    break;
+                  case Menu.hotkey:
+                    _handleClickRegisterNewHotKey(context);
                     break;
                   case Menu.group:
                     // TODO: Handle this case.
@@ -167,11 +175,20 @@ class ClipItemWidget extends StatelessWidget {
               itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
                     PopupMenuItem<Menu>(
                       value: Menu.favorite,
-                      child: buildMenuItem('Favorite', Icons.favorite, Colors.red),
+                      child:
+                          buildMenuItem('Favorite', Icons.favorite, Colors.red),
+                    ),
+                    PopupMenuItem<Menu>(
+                      value: Menu.hotkey,
+                      child: buildMenuItem(
+                          'HotKey',
+                          Icons.local_fire_department,
+                          const Color.fromARGB(255, 235, 118, 8)),
                     ),
                     PopupMenuItem<Menu>(
                       value: Menu.tag,
-                      child: buildMenuItem('Tags', Icons.local_offer_outlined, null),
+                      child: buildMenuItem(
+                          'Tags', Icons.local_offer_outlined, null),
                     ),
                     PopupMenuItem<Menu>(
                       value: Menu.group,
@@ -182,22 +199,37 @@ class ClipItemWidget extends StatelessWidget {
                       child: buildMenuItem('Delete', Icons.delete, null),
                     ),
                   ]),
-        Visibility(
-          visible: clip.favorite ? true : false,
-          child: IconButton(
-                icon: const Icon(Icons.favorite),
-                iconSize: 18,
-                splashRadius: 20,
-                color: clip.favorite == true
-                    ? Colors.red
-                    : theme.getTheme.iconTheme.color,
-                onPressed: () {
-                  manager.updateClipFavorite(clip);
-                },
-              ),
-        ),
+          Visibility(
+            visible: clip.favorite ? true : false,
+            child: IconButton(
+              icon: const Icon(Icons.favorite),
+              iconSize: 18,
+              splashRadius: 20,
+              color: clip.favorite == true
+                  ? Colors.red
+                  : theme.getTheme.iconTheme.color,
+              onPressed: () {
+                manager.updateClip(clip);
+              },
+            ),
+          ),
         ],
       ),
+    );
+  }
+
+  Future<void> _handleClickRegisterNewHotKey(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return RecordHotKeyDialog(
+            onHotKeyRecorded: (newHotKey) => {
+                  hotkeyService.registerHotKey(newHotKey),
+                  clip.hotKey = newHotKey,
+                  manager.updateClip(clip)
+                });
+      },
     );
   }
 
@@ -214,6 +246,11 @@ class ClipItemWidget extends StatelessWidget {
   deleteClip() {
     manager.deleteClip(clip);
     return showSnackBar("Clip Deleted");
+  }
+
+  updateFavorite() async {
+    clip.favorite = clip.favorite ? false : true;
+    await manager.updateClip(clip);
   }
 
   showSnackBar(String message) {

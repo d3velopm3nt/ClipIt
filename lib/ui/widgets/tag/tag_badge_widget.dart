@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../models/cliptag.model.dart';
-import '../../theme/theme_changer.dart';
+import '../../../models/cliptag.model.dart';
+import '../../../theme/theme_changer.dart';
 
 class TagBadgeWidget extends StatefulWidget {
   final ClipTag tag ;

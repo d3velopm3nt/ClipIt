@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/app/app-notification.dart';
+import 'package:flutter_my_clipboard/app/app.notification.dart';
 import 'package:hive/hive.dart';
 import '../models/cliptag.model.dart';
 

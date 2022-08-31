@@ -42,4 +42,25 @@ class AppNotification{
                          const Duration(milliseconds: 600),
                       duration: const Duration(milliseconds: 2000)); 
   }
+
+  
+  static infoNotification(String title,String? subtitle){
+      BotToast.showNotification(
+      //backgroundColor: Colors.green,
+      leading: (_) =>const Icon(Icons.save_rounded),
+      title: (_) =>Text(title),
+      align: Alignment.bottomCenter,
+      subtitle: (_) => Text(subtitle ?? ""),
+                      trailing: (cancel) => IconButton(
+                            icon: const Icon(Icons.cancel),
+                            onPressed: cancel,
+                          ),
+                      contentPadding: const EdgeInsets.all(2),
+                      onlyOne: true,
+                      animationDuration:
+                         const Duration(milliseconds: 300),
+                      animationReverseDuration:
+                         const Duration(milliseconds: 600),
+                      duration: const Duration(milliseconds: 2000)); 
+  }
 }

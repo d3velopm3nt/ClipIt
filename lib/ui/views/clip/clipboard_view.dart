@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../services/clip_manager_service.dart';
-import '../../services/clip_tag_service.dart';
-import '../widgets/clip_item_widget.dart';
+import '../../../navigation/navigation_manager.dart';
+import '../../../services/clip_manager_service.dart';
+import '../../../services/clip_tag_service.dart';
+import '../../widgets/clip/clip_item_widget.dart';
+import '../shared/page_widget.dart';
 
 class ClipboardView extends StatefulWidget {
   ClipboardView({Key? key}) : super(key: key);
@@ -13,13 +15,20 @@ class ClipboardView extends StatefulWidget {
 
 class _ClipboardViewState extends State<ClipboardView> {
   final searchController = TextEditingController();
+  final navigation = NavigationManager();
   ClipTagService tagManager = ClipTagService();
-    @override
+  @override
   void initState() {
     Future.delayed(Duration.zero, () async {
-     await tagManager.loadTags();
+      await tagManager.loadTags();
+      //  await AppLoadTest.createTags(tagManager,"TEST TAG ", 10);
     });
-     super.initState();
+    
+  //   WidgetsBinding.instance.endOfFrame.then((_) {
+  //     print("page loaded");
+  //     navigation.pageLoading(false);
+  //   });
+    super.initState();
   }
 
   @override
@@ -29,7 +38,6 @@ class _ClipboardViewState extends State<ClipboardView> {
     return Center(
         child: Column(
       children: [
-        
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: SizedBox(
