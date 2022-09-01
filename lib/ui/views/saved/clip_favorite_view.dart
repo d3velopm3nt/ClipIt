@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/widgets/clip/clip_item_widget.dart';
 import 'package:provider/provider.dart';
-
 import '../../../services/clip_manager_service.dart';
-import 'saved_menu.dart';
 
 class ClipFavoriteView extends StatelessWidget {
   const ClipFavoriteView({Key? key}) : super(key: key);

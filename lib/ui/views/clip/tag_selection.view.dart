@@ -96,6 +96,6 @@ class _TagSelectorViewState extends State<TagSelectorView> {
       item.tags.remove(tag.id);
       }
     }
-    clipManager.updateClipTags(widget.item);
+    clipManager.updateClip(widget.item);
   }
 }

@@ -1,30 +1,48 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_my_clipboard/models/hotkey.model.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:window_manager/window_manager.dart';
 
-class HotKeyService extends ChangeNotifier {
-  late List<HotKey> _registeredHotKeyList = [];
+import '../hotkey/keyboard_simulator.dart';
+import '../models/clipitem.model.dart';
+import 'box/box_serice_base.dart';
+import 'clip_manager_service.dart';
 
+class HotKeyService extends BoxServiceBase<HotKeyModel> {
+  ClipManager clipManager = ClipManager();
+  late List<HotKey> _registeredHotKeyList;
   List<HotKey> get registeredHotKeyList => _registeredHotKeyList;
 
-  registerHotKey(HotKey key) async {
-    
-        await hotKeyManager.register(
+  @override
+  late String boxName = "hotkeys";
+
+  registerHotKey(HotKey key, String clipId) async {
+    await loadBox();
+    await hotKeyManager.register(
       key,
       keyDownHandler: _keyDownHandler,
     );
     _registeredHotKeyList = hotKeyManager.registeredHotKeyList;
-    notifyListeners();
+    HotKeyModel model = HotKeyModel(
+        key.identifier, key.keyCode, key.modifiers, key.scope, clipId);
+    await save(model);
   }
 
   unRegisterHotKey(HotKey key) async {
     await hotKeyManager.unregister(key);
-     _registeredHotKeyList = hotKeyManager.registeredHotKeyList;
+    _registeredHotKeyList = hotKeyManager.registeredHotKeyList;
   }
 
   _keyDownHandler(HotKey key) async {
     //Check if key is registred again clip then copy and past text
-  }
+    // var model = list.where((k) => k.id == key.identifier).first;
+    // if (model != null) {
+    //   var clip = await clipManager.getClipById(model.clipId);
+      // ClipboardData data = ClipboardData(text: clip.copiedText);
+      // await Clipboard.setData(data);
+      KeyboardSimulator.simulate();
+      // Clipboard.getData(Clipboard.kTextPlain);
+    }
 
   Future<void> load() async {
     await hotKeyManager.unregisterAll();

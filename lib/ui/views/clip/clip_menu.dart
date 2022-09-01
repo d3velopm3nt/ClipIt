@@ -6,7 +6,7 @@ import '../../../navigation/navigation_manager.dart';
 import '../../widgets/shared/app_menu_item.dart';
 
 class ClipMenu extends StatefulWidget {
-  ClipMenu({Key? key}) : super(key: key);
+  const ClipMenu({Key? key}) : super(key: key);
 
   @override
   State<ClipMenu> createState() => _ClipMenuState();

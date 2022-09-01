@@ -50,19 +50,19 @@ class _RecordHotKeyDialogState extends State<RecordHotKeyDialog> {
       ),
       actions: <Widget>[
         TextButton(
-          child: Text('Cancel'),
+          child: const Text('Cancel'),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         TextButton(
-          child: Text('OK'),
           onPressed: _hotKey == null
               ? null
               : () {
                   widget.onHotKeyRecorded(_hotKey!);
                   Navigator.of(context).pop();
                 },
+          child: const Text('OK'),
         ),
       ],
     );

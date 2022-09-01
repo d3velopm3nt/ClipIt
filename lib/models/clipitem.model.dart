@@ -15,8 +15,6 @@ class ClipItem extends HiveObject {
   bool favorite;
   @HiveField(4, defaultValue: [])
   List<String> tags;
-  @HiveField(5)
-  HotKey? hotKey;
 
   ClipItem(this.copiedText, this.datetime, this.favorite, this.tags, this.id);
 }

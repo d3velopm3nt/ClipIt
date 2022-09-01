@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
+import '../../../app/app.notification.dart';
 import '../../../models/clipitem.model.dart';
 import '../../../navigation/clip.navigation.dart';
 import '../../../services/clip_manager_service.dart';
@@ -28,6 +29,7 @@ class ClipItemWidget extends StatelessWidget {
     manager = Provider.of<ClipManager>(context);
     final tagManager = Provider.of<ClipTagService>(context);
     theme = Provider.of<ThemeChanger>(context);
+    hotkeyService = Provider.of<HotKeyService>(context);
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
@@ -165,10 +167,8 @@ class ClipItemWidget extends StatelessWidget {
                     _handleClickRegisterNewHotKey(context);
                     break;
                   case Menu.group:
-                    // TODO: Handle this case.
                     break;
                   case Menu.delete:
-                    // TODO: Handle this case.
                     break;
                 }
               },
@@ -209,7 +209,7 @@ class ClipItemWidget extends StatelessWidget {
                   ? Colors.red
                   : theme.getTheme.iconTheme.color,
               onPressed: () {
-                manager.updateClip(clip);
+                updateFavorite();
               },
             ),
           ),
@@ -225,9 +225,8 @@ class ClipItemWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return RecordHotKeyDialog(
             onHotKeyRecorded: (newHotKey) => {
-                  hotkeyService.registerHotKey(newHotKey),
-                  clip.hotKey = newHotKey,
-                  manager.updateClip(clip)
+                  hotkeyService.registerHotKey(newHotKey,clip.id.toString()),
+                  AppNotification.saveNotification("New HotKey has been assign", "Now you can use the hot key to copy and paste the clip text")
                 });
       },
     );

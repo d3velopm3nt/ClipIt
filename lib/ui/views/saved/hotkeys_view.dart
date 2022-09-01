@@ -1,13 +1,10 @@
-import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:preference_list/preference_list.dart';
-
 import '../../../services/hotkey_service.dart';
-import '../../widgets/shared/record_hotkey_dialog.dart';
+
 
 class HotkeysView extends StatefulWidget {
   const HotkeysView({Key? key}) : super(key: key);
@@ -54,11 +51,11 @@ class _HotkeysViewState extends State<HotkeysView> {
     return PreferenceList(
       children: <Widget>[
         PreferenceListSection(
-          title: Text('REGISTERED HOTKEY LIST'),
+          title: const Text('REGISTERED HOTKEY LIST'),
           children: [
             for (var registeredHotKey in _registeredHotKeyList)
               PreferenceListItem(
-                padding: EdgeInsets.all(12),
+                padding: const EdgeInsets.all(12),
                 title: Row(
                   children: [
                     const TitleDesc(title: 'Title', description: 'Description'),

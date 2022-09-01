@@ -8,19 +8,22 @@ import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 import 'models/clipitem.model.dart';
 import 'models/cliptag.model.dart';
+import 'models/hotkey.model.dart';
 import 'navigation/navigation_manager.dart';
 import 'services/clip_manager_service.dart';
 import 'services/hotkey_service.dart';
 import 'settings/services/setting_changer.dart';
 import 'ui/views/main_view.dart';
 import 'ui/widgets/shared/app_system_tray.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Start Hive
   Hive.initFlutter();
   Hive.registerAdapter(ClipItemAdapter());
   Hive.registerAdapter(ClipTagAdapter());
-  
+  Hive.registerAdapter(HotKeyAdapter());
+
   // Ensure Windows  Manager is initialized
   await WindowManager.instance.ensureInitialized();
   runApp(const App());

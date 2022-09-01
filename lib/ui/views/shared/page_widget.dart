@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../navigation/navigation_manager.dart';
 
 class PageWidget extends StatefulWidget {
-  PageWidget({Key? key}) : super(key: key);
+  const PageWidget({Key? key}) : super(key: key);
 
   @override
   State<PageWidget> createState() => _PageWidgetState();
@@ -15,7 +15,6 @@ class _PageWidgetState extends State<PageWidget> {
   void initState() {
 
 WidgetsBinding.instance.endOfFrame.then((_) {
-      print("page loaded");
       navigation.pageLoading(false);
     });
 

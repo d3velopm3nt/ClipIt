@@ -5,7 +5,6 @@ import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
-import '../../../app/app.loadtest.dart';
 import '../../../navigation/clip.navigation.dart';
 import '../../../navigation/navigation_manager.dart';
 import '../../../services/clip_tag_service.dart';
@@ -113,7 +112,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       ),
       body: Column(
         children: [
-          navigation.isNavMain ? ClipMenu() : SavedMenu(),
+          navigation.isNavMain ? const ClipMenu() : const SavedMenu(),
           SizedBox(
             height: MediaQuery.of(context).size.height - 100,
             width: MediaQuery.of(context).size.width,

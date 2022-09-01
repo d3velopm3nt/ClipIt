@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
 import '../../../navigation/clip.navigation.dart';
 import '../../widgets/shared/app_menu_item.dart';
 
 class SavedMenu extends StatefulWidget {
-  SavedMenu({Key? key}) : super(key: key);
+ const SavedMenu({Key? key}) : super(key: key);
 
   @override
   State<SavedMenu> createState() => _SavedMenuState();

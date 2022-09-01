@@ -14,12 +14,11 @@ class ClipManager extends ChangeNotifier {
   final clipBoxName = "clipBox";
 
   loadClipBox() async {
-    if (!Hive.isBoxOpen(clipBoxName)) {
+    //if (!Hive.isBoxOpen(clipBoxName)) {
       clipBox = await Hive.openBox<ClipItem>(clipBoxName);
-    }
+   // }
 
     _clips = List<ClipItem>.from(clipBox.values.toList());
-
   }
 
   deleteClips() async {
@@ -55,17 +54,12 @@ class ClipManager extends ChangeNotifier {
     await refreshClips();
   }
 
-
-
   updateClip(ClipItem item) async {
+    Stopwatch sw = Stopwatch();
+    sw.start();
     item.save();
-    await refreshClips();
-  }
-
-  updateClipTags(ClipItem item) async {
-    // var clip = clips.firstWhere((clip) => clip.key == item.key);
-    // clip.tags = item.tags;
-    item.save();
+    sw.stop();
+    print("update item - ${sw.elapsedMilliseconds}");
     await refreshClips();
   }
 
@@ -84,6 +78,12 @@ class ClipManager extends ChangeNotifier {
 
   loadClips() async {
     await refreshClips();
+  }
+
+ Future<ClipItem> getClipById(String id) async  {
+  await loadClipBox();
+    var clip = _clips.where((c) => c.id.toString() == id);
+    return clip.first;
   }
 
   List<ClipItem> getByDate(DateTime date) {

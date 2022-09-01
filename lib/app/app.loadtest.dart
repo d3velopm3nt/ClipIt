@@ -9,12 +9,11 @@ import '../services/clip_tag_service.dart';
 
 class AppLoadTest {
   static copyToClipboard(String text, int total) async {
-    print("start load copy to clipboard");
+   
     for (int i = 0; i < total; i++) {
       ClipboardData data = ClipboardData(text: text + i.toString());
       await Clipboard.setData(data);
       await Future.delayed(const Duration(milliseconds: 300));
-      print(text + i.toString());
     }
   }
 
@@ -25,7 +24,6 @@ class AppLoadTest {
           const Uuid().v4());
       tagManager.saveTag(tag);
       await Future.delayed(const Duration(milliseconds: 300));
-      print(text + i.toString());
     }
   }
 }

@@ -6,7 +6,7 @@ import '../../../theme/theme_changer.dart';
 
 class TagBadgeWidget extends StatefulWidget {
   final ClipTag tag ;
-  TagBadgeWidget({Key? key, required this.tag}) : super(key: key);
+  const TagBadgeWidget({Key? key, required this.tag}) : super(key: key);
 
   @override
   State<TagBadgeWidget> createState() => _TagBadgeWidgetState();

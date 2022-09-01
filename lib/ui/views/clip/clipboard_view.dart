@@ -4,10 +4,9 @@ import '../../../navigation/navigation_manager.dart';
 import '../../../services/clip_manager_service.dart';
 import '../../../services/clip_tag_service.dart';
 import '../../widgets/clip/clip_item_widget.dart';
-import '../shared/page_widget.dart';
 
 class ClipboardView extends StatefulWidget {
-  ClipboardView({Key? key}) : super(key: key);
+  const ClipboardView({Key? key}) : super(key: key);
 
   @override
   State<ClipboardView> createState() => _ClipboardViewState();
@@ -69,4 +68,5 @@ class _ClipboardViewState extends State<ClipboardView> {
       ],
     ));
   }
+
 }

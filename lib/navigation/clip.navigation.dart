@@ -36,7 +36,7 @@ class ClipNavigation {
         break;
       case ClipRoutes.clipboard:
       default:
-        page = ClipboardView();
+        page = const ClipboardView();
         break;
     }
 
@@ -63,7 +63,9 @@ class ClipNavigation {
   }
 
   static navigateToRoute(String route, {Object? args}) {
-    nav.currentState!.pushNamed(route, arguments: args);
+    if(route != currentRoute){
+    nav.currentState!.pushReplacementNamed(route, arguments: args);
+    }
   }
 }
 

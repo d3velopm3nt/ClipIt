@@ -1,44 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'clipitem.model.dart';
+part of 'hotkey.model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class ClipItemAdapter extends TypeAdapter<ClipItem> {
+class HotKeyAdapter extends TypeAdapter<HotKeyModel> {
   @override
-  final int typeId = 0;
+  final int typeId = 2;
 
   @override
-  ClipItem read(BinaryReader reader) {
+  HotKeyModel read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return ClipItem(
-      fields[1] as String,
-      fields[2] as String,
-      fields[3] == null ? false : fields[3] as bool,
-      fields[4] == null ? [] : (fields[4] as List).cast<String>(),
-      fields[0] as int,
+    return HotKeyModel(
+      fields[0] as String,
+      fields[1] as KeyCode,
+      (fields[2] as List?)?.cast<KeyModifier>(),
+      fields[3] as HotKeyScope,
+      fields[4] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, ClipItem obj) {
+  void write(BinaryWriter writer, HotKeyModel obj) {
     writer
       ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.copiedText)
+      ..write(obj.keyCode)
       ..writeByte(2)
-      ..write(obj.datetime)
+      ..write(obj.modifiers)
       ..writeByte(3)
-      ..write(obj.favorite)
+      ..write(obj.scope)
       ..writeByte(4)
-      ..write(obj.tags);
+      ..write(obj.clipId);
   }
 
   @override
@@ -47,7 +47,7 @@ class ClipItemAdapter extends TypeAdapter<ClipItem> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ClipItemAdapter &&
+      other is HotKeyAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

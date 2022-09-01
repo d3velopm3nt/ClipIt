@@ -40,11 +40,11 @@ class ColorSelector extends StatefulWidget {
 }
 
 class _ColorSelectorState extends State<ColorSelector> {
-  int _portraitCrossAxisCount = 3;
-  int _landscapeCrossAxisCount = 3;
-  double _borderRadius = 30;
-  double _blurRadius = 5;
-  double _iconSize = 24;
+  final int _portraitCrossAxisCount = 3;
+  final int _landscapeCrossAxisCount = 3;
+  final double _borderRadius = 30;
+  final double _blurRadius = 5;
+  final double _iconSize = 24;
   Color currentColor = Colors.amber;
   List<Color> currentColors = [Colors.yellow, Colors.green];
   List<Color> colorHistory = [];

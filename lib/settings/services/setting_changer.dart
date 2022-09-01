@@ -7,7 +7,7 @@ class SettingChanger extends ChangeNotifier {
   final Pinned _windowPinned = Pinned();
   bool _windowMode = false;
 
-  bool _dockApp = true;
+  final bool _dockApp = true;
 
   Pinned get windowPinned => _windowPinned;
 
