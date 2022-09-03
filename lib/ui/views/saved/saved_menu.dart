@@ -18,16 +18,21 @@ class _SavedMenuState extends State<SavedMenu> {
            crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-        AppMenuItem(icon: Icons.favorite, onPressed: () {
+        AppMenuItem(
+            route: SavedRoutes.favorites,
+          icon: Icons.favorite, onPressed: () {
           ClipNavigation.navigateToRoute(SavedRoutes.favorites);
         }),
         // AppMenuItem(icon: Icons.double_arrow_sharp, onPressed: () {}),
         AppMenuItem(
+            route: SavedRoutes.hotkeys,
             icon: Icons.local_fire_department,
             onPressed: () {
               ClipNavigation.navigateToRoute(SavedRoutes.hotkeys);
             }),
-        AppMenuItem(icon: Icons.space_dashboard, onPressed: () {}),
+        AppMenuItem(
+            route: SavedRoutes.groups,
+          icon: Icons.space_dashboard, onPressed: () {}),
       ]),
     );
   }

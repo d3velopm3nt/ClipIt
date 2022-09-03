@@ -41,8 +41,8 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     clipboardWatcher.addListener(this);
     clipboardWatcher.start();
     Future.delayed(Duration.zero, () async {
-      await hotKeyService.load();
       await _manager.loadClips();
+      await hotKeyService.load();
       //Load Test
      // await AppLoadTest.copyToClipboard('TEST', 50);
       
@@ -74,6 +74,8 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     var settingsProvider = Provider.of<SettingChanger>(context);
     final navigation = Provider.of<NavigationManager>(context);
     _manager = Provider.of<ClipManager>(context);
+    tagManager = Provider.of<ClipTagService>(context);
+    hotKeyService = Provider.of<HotKeyService>(context);
     return Scaffold(
       appBar: AppBar(
         title: navigation.isNavMain

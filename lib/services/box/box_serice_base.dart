@@ -23,15 +23,15 @@ class BoxServiceBase<T> extends ChangeNotifier
 
   @override
   Future<void> refresh() async {
-    await loadBox();
+    _list = List<T>.from(box.values.toList());
     notifyListeners();
   }
 
   @override
   Future<void> delete(T) async {
-    try{
-    T.delete();
-   await loadBox();
+    try {
+      T.delete();
+      await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(
           "Error deleting ${T.toString()}", ex.toString());
@@ -41,13 +41,14 @@ class BoxServiceBase<T> extends ChangeNotifier
   @override
   Future<void> save(T) async {
     try {
+      await loadBox();
       //Check if key exists
       if (T.key != null && T.containsKey(T.key)) {
         T.save();
       } else {
         box.add(T);
       }
-      await loadBox();
+      await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(
           "Error saving ${T.toString()}", ex.toString());
@@ -56,12 +57,20 @@ class BoxServiceBase<T> extends ChangeNotifier
 
   @override
   Future<void> update(T) async {
-   try{
-    T.save();
-   await loadBox();
+    try {
+      await loadBox();
+      T.save();
+      await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(
           "Error updating ${T.toString()}", ex.toString());
     }
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    await box.deleteFromDisk();
+    _list = [];
+    notifyListeners();
   }
 }

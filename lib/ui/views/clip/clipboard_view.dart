@@ -5,35 +5,18 @@ import '../../../services/clip_manager_service.dart';
 import '../../../services/clip_tag_service.dart';
 import '../../widgets/clip/clip_item_widget.dart';
 
-class ClipboardView extends StatefulWidget {
-  const ClipboardView({Key? key}) : super(key: key);
+class ClipboardView extends StatelessWidget {
+  ClipboardView({Key? key}) : super(key: key);
 
-  @override
-  State<ClipboardView> createState() => _ClipboardViewState();
-}
-
-class _ClipboardViewState extends State<ClipboardView> {
   final searchController = TextEditingController();
   final navigation = NavigationManager();
   ClipTagService tagManager = ClipTagService();
-  @override
-  void initState() {
-    Future.delayed(Duration.zero, () async {
-      await tagManager.loadTags();
-      //  await AppLoadTest.createTags(tagManager,"TEST TAG ", 10);
-    });
-    
-  //   WidgetsBinding.instance.endOfFrame.then((_) {
-  //     print("page loaded");
-  //     navigation.pageLoading(false);
-  //   });
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     var manager = Provider.of<ClipManager>(context);
     tagManager = Provider.of<ClipTagService>(context);
+    //hotKeyService = Provider.of<HotKeyService>(context);
     return Center(
         child: Column(
       children: [
@@ -68,5 +51,4 @@ class _ClipboardViewState extends State<ClipboardView> {
       ],
     ));
   }
-
 }

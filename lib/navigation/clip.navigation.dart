@@ -36,7 +36,7 @@ class ClipNavigation {
         break;
       case ClipRoutes.clipboard:
       default:
-        page = const ClipboardView();
+        page = ClipboardView();
         break;
     }
 

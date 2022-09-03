@@ -9,4 +9,5 @@ abstract class BoxServiceInterface<T> {
   Future<void> save(T);
   Future<void> update(T);
   Future<void> delete(T);
+  Future<void> deleteAll();
 }

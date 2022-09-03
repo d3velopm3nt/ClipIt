@@ -1,10 +1,9 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:preference_list/preference_list.dart';
+import 'package:provider/provider.dart';
 import '../../../services/hotkey_service.dart';
-
 
 class HotkeysView extends StatefulWidget {
   const HotkeysView({Key? key}) : super(key: key);
@@ -14,46 +13,19 @@ class HotkeysView extends StatefulWidget {
 }
 
 class _HotkeysViewState extends State<HotkeysView> {
-  List<HotKey> _registeredHotKeyList = [];
-
-  // void _handleHotKeyRegister(HotKey hotKey) async {
-  //   await hotKeyManager.register(
-  //     hotKey,
-  //     keyDownHandler: _keyDownHandler,
-  //     keyUpHandler: _keyUpHandler,
-  //   );
-  //   setState(() {
-  //     _registeredHotKeyList = hotKeyManager.registeredHotKeyList;
-  //   });
-  // }
-
-  // void _handleHotKeyUnregister(HotKey hotKey) async {
-  //   await hotKeyManager.unregister(hotKey);
-  //   setState(() {
-  //     _registeredHotKeyList = hotKeyManager.registeredHotKeyList;
-  //   });
-  // }
-
-  // Future<void> _handleClickRegisterNewHotKey() async {
-  //   return showDialog<void>(
-  //     context: context,
-  //     barrierDismissible: false,
-  //     builder: (BuildContext context) {
-  //       return RecordHotKeyDialog(
-  //         onHotKeyRecorded: (newHotKey) => _handleHotKeyRegister(newHotKey),
-  //       );
-  //     },
-  //   );
-  // }
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Widget _buildBody(BuildContext context) {
-    final HotKeyService hotkeyService = HotKeyService();
+    final hotkeyService = Provider.of<HotKeyService>(context);
     return PreferenceList(
       children: <Widget>[
         PreferenceListSection(
           title: const Text('REGISTERED HOTKEY LIST'),
           children: [
-            for (var registeredHotKey in _registeredHotKeyList)
+            for (var registeredHotKey in hotkeyService.registeredHotKeyList)
               PreferenceListItem(
                 padding: const EdgeInsets.all(12),
                 title: Row(
@@ -70,38 +42,7 @@ class _HotkeysViewState extends State<HotkeysView> {
                     // ),
                   ],
                 ),
-                accessoryView: SizedBox(
-                  width: 40,
-                  height: 40,
-                  child: CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: const [
-                          Icon(
-                            CupertinoIcons.delete,
-                            size: 18,
-                            color: Colors.red,
-                          ),
-                        ],
-                      ),
-                      onPressed: () =>
-                          {} //_handleHotKeyUnregister(registeredHotKey),
-                      ),
-                ),
               ),
-            PreferenceListItem(
-              title: Text(
-                'Register a new HotKey',
-                style: TextStyle(
-                  color: Theme.of(context).primaryColor,
-                ),
-              ),
-              accessoryView: Container(),
-              onTap: () {
-                //_handleClickRegisterNewHotKey();
-              },
-            ),
           ],
         ),
         PreferenceListSection(
@@ -115,9 +56,7 @@ class _HotkeysViewState extends State<HotkeysView> {
               ),
               accessoryView: Container(),
               onTap: () async {
-                await hotKeyManager.unregisterAll();
-                _registeredHotKeyList = hotKeyManager.registeredHotKeyList;
-                setState(() {});
+                await hotkeyService.unregisterAll();
               },
             ),
           ],

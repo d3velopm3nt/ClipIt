@@ -22,24 +22,28 @@ class _ClipMenuState extends State<ClipMenu> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             AppMenuItem(
+              route: ClipRoutes.clipboard,
                 icon: Icons.search,
                 onPressed: () {
                   navigation.pageLoading(true);
                   ClipNavigation.navigateToRoute(ClipRoutes.clipboard);
                 }),
             AppMenuItem(
+              route: ClipRoutes.dates,
                 icon: Icons.calendar_month,
                 onPressed: () {
                    navigation.pageLoading(true);
                   ClipNavigation.navigateToRoute(ClipRoutes.dates);
                 }),
             AppMenuItem(
+              route: ClipRoutes.tags, 
                 icon: Icons.local_offer,
                 onPressed: () {
                    navigation.pageLoading(true);
                   ClipNavigation.navigateToRoute(ClipRoutes.tags);
                 }),
             AppMenuItem(
+              route: SavedRoutes.favorites,
                 icon: Icons.bookmark,
                 onPressed: () {
                   navigation.changeNav(NavRoutes.saved);

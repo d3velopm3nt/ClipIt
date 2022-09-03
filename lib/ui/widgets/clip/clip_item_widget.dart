@@ -19,17 +19,22 @@ enum Menu { favorite, tag, group, delete, hotkey }
 class ClipItemWidget extends StatelessWidget {
   final ClipItem clip;
   ClipItemWidget({Key? key, required this.clip}) : super(key: key);
+
   final bool latest = false;
 
   late ClipManager manager;
+
   late ThemeChanger theme;
+
   late HotKeyService hotkeyService;
+  bool hasHotKey = false;
+
   @override
   Widget build(BuildContext context) {
     manager = Provider.of<ClipManager>(context);
     final tagManager = Provider.of<ClipTagService>(context);
     theme = Provider.of<ThemeChanger>(context);
-    hotkeyService = Provider.of<HotKeyService>(context);
+
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
@@ -203,7 +208,7 @@ class ClipItemWidget extends StatelessWidget {
             visible: clip.favorite ? true : false,
             child: IconButton(
               icon: const Icon(Icons.favorite),
-              iconSize: 18,
+              iconSize: 15,
               splashRadius: 20,
               color: clip.favorite == true
                   ? Colors.red
@@ -213,6 +218,10 @@ class ClipItemWidget extends StatelessWidget {
               },
             ),
           ),
+          Visibility(
+              visible: hasHotKey,
+              child: const Icon(Icons.local_fire_department,
+                  size: 17, color: Color.fromARGB(255, 235, 118, 8))),
         ],
       ),
     );
@@ -225,8 +234,9 @@ class ClipItemWidget extends StatelessWidget {
       builder: (BuildContext context) {
         return RecordHotKeyDialog(
             onHotKeyRecorded: (newHotKey) => {
-                  hotkeyService.registerHotKey(newHotKey,clip.id.toString()),
-                  AppNotification.saveNotification("New HotKey has been assign", "Now you can use the hot key to copy and paste the clip text")
+                  hotkeyService.saveHotKey(newHotKey, clip.id.toString()),
+                  AppNotification.saveNotification("New HotKey has been assign",
+                      "Now you can use the hot key to copy and paste the clip text")
                 });
       },
     );
