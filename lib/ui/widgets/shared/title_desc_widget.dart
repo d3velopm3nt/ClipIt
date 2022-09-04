@@ -9,7 +9,11 @@ class TitleDesc extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min, 
+      children: [
       Text(title,style: titleStyle),
       if (description != null)
         Text(description as String,

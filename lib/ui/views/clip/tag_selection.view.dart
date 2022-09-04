@@ -22,9 +22,6 @@ class _TagSelectorViewState extends State<TagSelectorView> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero, () async {
-      await tagManager.loadTags();
-    });
     super.initState();
   }
 

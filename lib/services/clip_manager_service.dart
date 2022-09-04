@@ -13,6 +13,8 @@ class ClipManager extends ChangeNotifier {
   late Box clipBox;
   final clipBoxName = "clipBox";
 
+  ClipItem get latestClip => _clips.sortByLatestDate().first;
+
   loadClipBox() async {
     //if (!Hive.isBoxOpen(clipBoxName)) {
       clipBox = await Hive.openBox<ClipItem>(clipBoxName);
@@ -101,7 +103,7 @@ class ClipManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  ClipItem get latestClip => _clips.sortByLatestDate().first;
+  
 }
 
 extension Sorting on List<ClipItem> {

@@ -13,14 +13,20 @@ import '../clip/clip_item_widget.dart';
 class TagCard extends StatefulWidget {
   final ClipTag tag;
   final Function() onEdit;
-  const TagCard({Key? key, required this.tag, required this.onEdit})
+  final Function(ClipTag) onPressed;
+  final bool showClips;
+  TagCard(
+      {Key? key,
+      required this.tag,
+      required this.onEdit,
+      required this.onPressed,
+      required this.showClips})
       : super(key: key);
   @override
   State<TagCard> createState() => _TagCardState();
 }
 
 class _TagCardState extends State<TagCard> {
-  bool showClips = false;
   List<ClipItem> clips = [];
   late ThemeChanger theme;
   ClipTagService tagManager = ClipTagService();
@@ -33,14 +39,16 @@ class _TagCardState extends State<TagCard> {
     theme = Provider.of<ThemeChanger>(context);
     tagManager = Provider.of<ClipTagService>(context);
     clipManager = Provider.of<ClipManager>(context);
-    final clips  = clipManager.clips
+    final clips = clipManager.clips
         .where((element) => element.tags.contains(widget.tag.id));
     return Card(
       child: InkWell(
         onTap: () {
           setState(() {
             if (clips.isEmpty) return;
-            showClips = showClips ? false : true;
+            
+            widget.onPressed(widget.tag);
+            
           });
         },
         onHover: (hovering) => {
@@ -49,8 +57,11 @@ class _TagCardState extends State<TagCard> {
           })
         },
         borderRadius: BorderRadius.circular(8),
-        hoverColor:
-            showClips ? theme.getTheme.cardColor : widget.tag.color != 0 ? Color(widget.tag.color): theme.getTheme.primaryColor,
+        hoverColor: widget.showClips
+            ? theme.getTheme.cardColor
+            : widget.tag.color != 0
+                ? Color(widget.tag.color)
+                : theme.getTheme.primaryColor,
         mouseCursor: MaterialStateMouseCursor.clickable,
         child: Center(
           child: Column(
@@ -97,7 +108,9 @@ class _TagCardState extends State<TagCard> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
-                          color: widget.tag.color != 0 ? Color(widget.tag.color): theme.getTheme.primaryColor),
+                          color: widget.tag.color != 0
+                              ? Color(widget.tag.color)
+                              : theme.getTheme.primaryColor),
                       child: Text(
                         clips.length.toString(),
                         style: const TextStyle(
@@ -109,9 +122,9 @@ class _TagCardState extends State<TagCard> {
                 ],
               ),
               Visibility(
-                visible: showClips,
+                visible: widget.showClips,
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height - 430,
+                  height: MediaQuery.of(context).size.height -225,
                   child: ListView(shrinkWrap: true, children: [
                     ...clips.map((clip) => ClipItemWidget(clip: clip)),
                   ]),
@@ -130,10 +143,11 @@ class _TagCardState extends State<TagCard> {
         builder: (BuildContext ctx) {
           return ConfirmDailog(
               onConfirm: (confirm) async => {
-                    if (confirm) {
-                      await clipManager.removeClipTags(widget.tag.id),
-                      await tagManager.deleteTag(widget.tag)},
-
+                    if (confirm)
+                      {
+                        await clipManager.removeClipTags(widget.tag.id),
+                        await tagManager.deleteTag(widget.tag)
+                      },
                   });
         });
   }

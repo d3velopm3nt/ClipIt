@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../services/datetime_service.dart';
+import '../../../theme/theme_changer.dart';
 import '../shared/title_desc_widget.dart';
 import 'clip_item_widget.dart';
 
@@ -22,6 +24,7 @@ class _ClipCollectionState extends State<ClipCollection> {
   bool showClips = false;
   @override
   Widget build(BuildContext context) {
+    final theme = Provider.of<ThemeChanger>(context);
     return Card(
       child: InkWell(
         onTap: () {
@@ -50,13 +53,13 @@ class _ClipCollectionState extends State<ClipCollection> {
                     height: 40,
                     width: 40,
                     alignment: Alignment.center,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Color.fromARGB(255, 199, 235, 233)),
+                        color: theme.getTheme.secondaryHeaderColor),
                     child: Text(
                       widget.clips.length.toString(),
                       style: const TextStyle(
-                          fontSize: 15, color: Color.fromARGB(255, 94, 89, 89)),
+                          fontSize: 15),
                     ),
                   ),
                 )

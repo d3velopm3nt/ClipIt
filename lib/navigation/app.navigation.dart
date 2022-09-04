@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/views/clip/clip_manager_view.dart';
 
+import '../ui/views/quick_view.dart';
 import '../ui/views/settings_view.dart';
 
 class AppNavigation {
-  static final GlobalKey<NavigatorState> nav =  GlobalKey<NavigatorState>();
+  static final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
 
   static String previousRoute = "";
   static String currentRoute = "";
@@ -18,6 +19,9 @@ class AppNavigation {
       case AppRoutes.settings:
         page = const SettingsPage();
         break;
+      case AppRoutes.quickSelect:
+        page = const QuickView();
+        break;
       case AppRoutes.home:
       default:
         page = const ClipManagerPage();
@@ -30,17 +34,17 @@ class AppNavigation {
         transitionDuration: const Duration(seconds: 0));
   }
 
-    static previousPage() {
-    nav.currentState!.pushReplacementNamed(previousRoute);
+  static previousPage() {
+    nav.currentState!.popAndPushNamed(previousRoute);
   }
 
   static navigateToRoute(String route, {Object? args}) {
-    nav.currentState!.pushNamed(route, arguments: args);
+    nav.currentState!.pushReplacementNamed(route, arguments: args);
   }
 }
 
 class AppRoutes {
   static const String home = "/";
   static const String settings = "/settings";
+  static const String quickSelect = "/quickselect";
 }
-

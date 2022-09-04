@@ -1,6 +1,7 @@
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
+import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
 import 'package:flutter_my_clipboard/theme/theme_changer.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
@@ -12,17 +13,19 @@ import 'models/hotkey.model.dart';
 import 'navigation/navigation_manager.dart';
 import 'services/clip_manager_service.dart';
 import 'services/hotkey_service.dart';
-import 'settings/services/setting_changer.dart';
+import 'settings/models/settings.model.dart';
+import 'ui/display_manager.dart';
 import 'ui/views/main_view.dart';
 import 'ui/widgets/shared/app_system_tray.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   //Start Hive
-  Hive.initFlutter();
+  await Hive.initFlutter();
   Hive.registerAdapter(ClipItemAdapter());
   Hive.registerAdapter(ClipTagAdapter());
   Hive.registerAdapter(HotKeyAdapter());
+  Hive.registerAdapter(SettingsAdapter());
 
   // Ensure Windows  Manager is initialized
   await WindowManager.instance.ensureInitialized();
@@ -34,13 +37,7 @@ void main() async {
   WindowManager.instance.waitUntilReadyToShow().then((_) async {
     WindowManager.instance.hide();
     //Set to frameless window
-    await WindowManager.instance.setAsFrameless();
-    var display = await screenRetriever.getPrimaryDisplay();
-    await WindowManager.instance.setSize(Size(300, display.size.height - 40));
-    await WindowManager.instance
-        .setAlignment(Alignment.topRight, animate: true);
-    WindowManager.instance.setSkipTaskbar(true);
-    WindowManager.instance.show();
+    DisplayManager.clipboardView();
   });
 }
 
@@ -51,8 +48,8 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(providers: [
+      ChangeNotifierProvider(create: (_) => SettingsService()),
       ChangeNotifierProvider(create: (_) => ThemeChanger()),
-      ChangeNotifierProvider(create: (_) => SettingChanger()),
       ChangeNotifierProvider(create: (_) => ClipManager()),
       ChangeNotifierProvider(create: (_) => ClipTagService()),
       ChangeNotifierProvider(create: (_) => NavigationManager()),

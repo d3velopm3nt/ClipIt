@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clipboard_watcher/clipboard_watcher.dart';
 import 'package:flutter_my_clipboard/services/hotkey_service.dart';
+import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
+import 'package:flutter_my_clipboard/ui/display_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../../navigation/clip.navigation.dart';
 import '../../../navigation/navigation_manager.dart';
 import '../../../services/clip_tag_service.dart';
-import '../../../settings/services/setting_changer.dart';
+import '../../../theme/theme_changer.dart';
 import '../saved/saved_menu.dart';
 import 'clip_menu.dart';
 
@@ -33,19 +36,20 @@ class _ClipManagerPageState extends State<ClipManagerPage>
   IconData pinnedIcon = Icons.push_pin;
   String pinnedIconTooltip = "Pin To Top";
   List<LogicalKeyboardKey> keys = [];
+  ThemeChanger theme = ThemeChanger();
   ClipManager _manager = ClipManager();
   ClipTagService tagManager = ClipTagService();
   HotKeyService hotKeyService = HotKeyService();
+  SettingsService settingService = SettingsService();
   @override
   void initState() {
     clipboardWatcher.addListener(this);
     clipboardWatcher.start();
     Future.delayed(Duration.zero, () async {
+      await settingService.loadSettings(theme);
+      await tagManager.loadTags();
       await _manager.loadClips();
       await hotKeyService.load();
-      //Load Test
-     // await AppLoadTest.copyToClipboard('TEST', 50);
-      
     });
     super.initState();
   }
@@ -60,6 +64,8 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     } else if (newText != "") {
       await _manager.updateClipDate(newText);
     }
+
+   await DisplayManager.quickView();
   }
 
   openSettings() async {
@@ -71,7 +77,9 @@ class _ClipManagerPageState extends State<ClipManagerPage>
 
   @override
   Widget build(BuildContext context) {
-    var settingsProvider = Provider.of<SettingChanger>(context);
+    theme = Provider.of<ThemeChanger>(context);
+    settingService = Provider.of<SettingsService>(context);
+
     final navigation = Provider.of<NavigationManager>(context);
     _manager = Provider.of<ClipManager>(context);
     tagManager = Provider.of<ClipTagService>(context);
@@ -84,6 +92,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
                 IconButton(
                     onPressed: () {
                       navigation.changeNav(NavRoutes.main);
+                      ClipNavigation.previousPage();
                     },
                     icon: const Icon(Icons.arrow_back)),
                 const Text("Saved")
@@ -91,13 +100,13 @@ class _ClipManagerPageState extends State<ClipManagerPage>
         toolbarHeight: 50.0, // add this line
         actions: <Widget>[
           IconButton(
-              tooltip: settingsProvider.windowPinned.tooltip,
+              tooltip: settingService.windowPinned.tooltip,
               icon: Icon(
-                settingsProvider.windowPinned.icon,
+                settingService.windowPinned.icon,
                 color: Colors.white,
               ),
               onPressed: () {
-                settingsProvider.pinWindow();
+                settingService.pinWindow();
               }),
           IconButton(
             tooltip: 'Settings',

@@ -13,15 +13,14 @@ class ThemeChanger extends ChangeNotifier {
   get darkMode => _darkMode;
   void setTheme(ThemeData theme) {
     _themeData = theme;
-
     notifyListeners();
   }
 
   void setDarkMode(bool enabled) {
     _darkMode = enabled;
     _themeData = _darkMode ? darkTheme : lightTheme;
-
     notifyListeners();
+
   }
 
   ThemeData get darkTheme {
@@ -50,12 +49,5 @@ class ThemeChanger extends ChangeNotifier {
     secondaryColor = color;
     _themeData = _darkMode ? darkTheme : lightTheme;
     notifyListeners();
-  }
-}
-
-class HexToColor extends Color{
-  HexToColor(final String code) : super(_hexToColor(code));
-  static _hexToColor(String code) {
-    return int.parse(code.substring(1, 7), radix: 16) + 0xFF000000;
   }
 }

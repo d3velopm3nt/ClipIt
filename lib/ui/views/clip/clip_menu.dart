@@ -24,6 +24,7 @@ class _ClipMenuState extends State<ClipMenu> {
             AppMenuItem(
               route: ClipRoutes.clipboard,
                 icon: Icons.search,
+                label: "Search",
                 onPressed: () {
                   navigation.pageLoading(true);
                   ClipNavigation.navigateToRoute(ClipRoutes.clipboard);
@@ -31,6 +32,7 @@ class _ClipMenuState extends State<ClipMenu> {
             AppMenuItem(
               route: ClipRoutes.dates,
                 icon: Icons.calendar_month,
+                label: "Calendar",
                 onPressed: () {
                    navigation.pageLoading(true);
                   ClipNavigation.navigateToRoute(ClipRoutes.dates);
@@ -38,6 +40,7 @@ class _ClipMenuState extends State<ClipMenu> {
             AppMenuItem(
               route: ClipRoutes.tags, 
                 icon: Icons.local_offer,
+                label: "Tags",
                 onPressed: () {
                    navigation.pageLoading(true);
                   ClipNavigation.navigateToRoute(ClipRoutes.tags);
@@ -45,6 +48,7 @@ class _ClipMenuState extends State<ClipMenu> {
             AppMenuItem(
               route: SavedRoutes.favorites,
                 icon: Icons.bookmark,
+                label: "Saved",
                 onPressed: () {
                   navigation.changeNav(NavRoutes.saved);
                   ClipNavigation.navigateToRoute(SavedRoutes.favorites);

@@ -11,7 +11,7 @@ class ClipNavigation {
   static final GlobalKey<NavigatorState> nav = GlobalKey<NavigatorState>();
 
   static String previousRoute = "";
-  static String currentRoute = "";
+  static String currentRoute = ClipRoutes.clipboard;
 
   static navigationRoutes(String? name, [Object? args]) {
     Widget page;

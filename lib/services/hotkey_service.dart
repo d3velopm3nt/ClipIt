@@ -5,6 +5,9 @@ import 'package:hotkey_manager/hotkey_manager.dart';
 import 'package:window_manager/window_manager.dart';
 import '../app/app.notification.dart';
 import '../hotkey/keyboard_simulator.dart';
+import '../navigation/app.navigation.dart';
+import '../navigation/clip.navigation.dart';
+import '../ui/display_manager.dart';
 import 'box/box_serice_base.dart';
 import 'clip_manager_service.dart';
 
@@ -87,7 +90,10 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
       await hotKeyManager.register(
         hotKey,
         keyDownHandler: (hotKey) {
-          WindowManager.instance.show();
+          if(AppRoutes.quickSelect == AppNavigation.currentRoute){
+        AppNavigation.navigateToRoute(AppRoutes.home);
+          }
+        DisplayManager.clipboardView();
         },
       );
     }

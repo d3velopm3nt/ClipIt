@@ -1,10 +1,23 @@
-class SettingsModel {
-  bool darkTheme = false;
-  String primaryColor = "";
-  String secondaryColor = "";
-  late bool alwaysOnTop;
-  late String dockToSide;
-  late bool launchAtStartup;
+import 'package:hive_flutter/hive_flutter.dart';
 
-  SettingsModel();
+part 'settings.model.g.dart';
+
+@HiveType(typeId: 3, adapterName: "SettingsAdapter")
+class SettingsModel extends HiveObject {
+  @HiveField(0)
+  bool darkMode = false;
+  @HiveField(1)
+  bool windowMode = false;
+  @HiveField(2)
+  int primaryColor;
+  @HiveField(3)
+  int secondaryColor;
+  @HiveField(4)
+  bool alwaysOnTop;
+  @HiveField(5)
+  bool dockToSide;
+  @HiveField(6)
+  bool launchAtStartup;
+
+  SettingsModel(this.alwaysOnTop,this.dockToSide,this.launchAtStartup,this.darkMode,this.primaryColor,this.secondaryColor);
 }

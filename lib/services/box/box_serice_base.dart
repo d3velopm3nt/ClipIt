@@ -41,9 +41,9 @@ class BoxServiceBase<T> extends ChangeNotifier
   @override
   Future<void> save(T) async {
     try {
-      await loadBox();
+      //await loadBox();
       //Check if key exists
-      if (T.key != null && T.containsKey(T.key)) {
+      if (T.key != null && box.containsKey(T.key)) {
         T.save();
       } else {
         box.add(T);

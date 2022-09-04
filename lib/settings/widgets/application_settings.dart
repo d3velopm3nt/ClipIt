@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
-import '../services/setting_changer.dart';
 import '../../ui/widgets/shared/title_desc_widget.dart';
 
 class ApplicationSettings extends SettingsSection {
   ApplicationSettings({Key? key}) : super(key: key, tiles: []);
-
+  SettingsService settingProvider = SettingsService();
   @override
   Widget build(BuildContext context) {
-    var settingProvider = Provider.of<SettingChanger>(context);
+    settingProvider = Provider.of<SettingsService>(context);
 
     return SettingsSection(title: const Text('Application Settings'), tiles: [
       SettingsTile.navigation(
@@ -24,7 +24,7 @@ class ApplicationSettings extends SettingsSection {
         leading: const Icon(Icons.push_pin),
         initialValue: settingProvider.windowPinned.state,
         onToggle: (value) {
-          settingProvider.pinWindow();
+          savePinWindow(value);
         },
         onPressed: (context) => {},
       ),
@@ -33,9 +33,10 @@ class ApplicationSettings extends SettingsSection {
             title: 'Window Mode',
             description: 'This will add the titlebar to the application'),
         leading: const Icon(Icons.window),
-        initialValue: settingProvider.windowMode,
+        initialValue: settingProvider.appSettings.windowMode,
         onToggle: (value) {
-          settingProvider.enableWindowMode(value);
+         
+
         },
         onPressed: (context) => {},
       ),
@@ -49,13 +50,31 @@ class ApplicationSettings extends SettingsSection {
         trailing: IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              settingProvider.dockToSide();
+              saveDockToSide();
             }),
         onToggle: (value) {
-          settingProvider.enableWindowMode(value);
+         
         },
         onPressed: (context) => {},
       )
     ]);
+  }
+
+  savePinWindow(bool value) async {
+    settingProvider.pinWindow();
+    settingProvider.appSettings.alwaysOnTop = value;
+    await settingProvider.saveSettings();
+  }
+
+  saveDockToSide() async {
+    settingProvider.dockToSide();
+    settingProvider.appSettings.dockToSide = true;
+    await settingProvider.saveSettings();
+  }
+
+  enableWindowMode(bool value) async {
+    settingProvider.enableWindowMode(value);
+    settingProvider.appSettings.windowMode = value;
+    await settingProvider.saveSettings();
   }
 }

@@ -1,8 +1,10 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
+import 'package:window_manager/window_manager.dart';
 import '../../../app/app.notification.dart';
 import '../../../models/clipitem.model.dart';
 import '../../../navigation/clip.navigation.dart';
@@ -62,9 +64,10 @@ class ClipItemWidget extends StatelessWidget {
                       children: [
                         IconButton(
                           onPressed: () {
-                            var snackBar = copyToClipboard();
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
+                            copyToClipboard();
+                            AppNotification.infoNotification(
+                                "Copied to clipbooard",
+                                "Use Paste function to get copied text");
                           },
                           icon: const Icon(Icons.copy),
                           splashRadius: 20,
@@ -273,9 +276,9 @@ class ClipItemWidget extends StatelessWidget {
     );
   }
 
-  copyToClipboard() {
+  copyToClipboard() async {
     ClipboardData data = ClipboardData(text: clip.copiedText);
     Clipboard.setData(data);
-    return showSnackBar('Copied to Clipboard');
+   
   }
 }
