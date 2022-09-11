@@ -4,23 +4,29 @@ class TitleDesc extends StatelessWidget {
   final String title;
   final String? description;
   final TextStyle? titleStyle;
-  const TitleDesc({Key? key, required this.title,this.titleStyle, this.description})
+  final TextStyle? descriptionStyle;
+  const TitleDesc(
+      {Key? key,
+      required this.title,
+      this.titleStyle,
+      this.description,
+      this.descriptionStyle})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min, 
-      children: [
-      Text(title,style: titleStyle),
-      if (description != null)
-        Text(description as String,
-            style: const TextStyle(
-              fontSize: 12,
-              color: Colors.grey,
-            )),
-    ]);
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(title, style: titleStyle),
+          if (description != null)
+            Text(description as String,
+                style: descriptionStyle ??
+                    const TextStyle(
+                      fontSize: 12,
+                    )),
+        ]);
   }
 }

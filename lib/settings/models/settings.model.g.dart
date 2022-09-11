@@ -17,31 +17,39 @@ class SettingsAdapter extends TypeAdapter<SettingsModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return SettingsModel(
-      fields[3] as bool,
       fields[4] as bool,
       fields[5] as bool,
+      fields[6] as bool,
       fields[0] as bool,
-      fields[1] as int,
       fields[2] as int,
-    );
+      fields[3] as int,
+      fields[7] as bool,
+      fields[8] == null ? false : fields[8] as bool,
+    )..windowMode = fields[1] as bool;
   }
 
   @override
   void write(BinaryWriter writer, SettingsModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.darkMode)
       ..writeByte(1)
-      ..write(obj.primaryColor)
+      ..write(obj.windowMode)
       ..writeByte(2)
-      ..write(obj.secondaryColor)
+      ..write(obj.primaryColor)
       ..writeByte(3)
-      ..write(obj.alwaysOnTop)
+      ..write(obj.secondaryColor)
       ..writeByte(4)
-      ..write(obj.dockToSide)
+      ..write(obj.alwaysOnTop)
       ..writeByte(5)
-      ..write(obj.launchAtStartup);
+      ..write(obj.dockToSide)
+      ..writeByte(6)
+      ..write(obj.launchAtStartup)
+      ..writeByte(7)
+      ..write(obj.hideClipboardAfterCopy)
+      ..writeByte(8)
+      ..write(obj.showQuickSelect);
   }
 
   @override

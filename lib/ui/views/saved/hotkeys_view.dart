@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_my_clipboard/ui/widgets/shared/title_desc_widget.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:flutter_my_clipboard/ui/widgets/shared/hotkey_item.dart';
 import 'package:preference_list/preference_list.dart';
 import 'package:provider/provider.dart';
 import '../../../services/hotkey_service.dart';
@@ -25,24 +24,8 @@ class _HotkeysViewState extends State<HotkeysView> {
         PreferenceListSection(
           title: const Text('REGISTERED HOTKEY LIST'),
           children: [
-            for (var registeredHotKey in hotkeyService.registeredHotKeyList)
-              PreferenceListItem(
-                padding: const EdgeInsets.all(12),
-                title: Row(
-                  children: [
-                    const TitleDesc(title: 'Title', description: 'Description'),
-                    HotKeyVirtualView(hotKey: registeredHotKey),
-                    // SizedBox(width: 10),
-                    // Text(
-                    //   registeredHotKey.scope.toString(),
-                    //   style: TextStyle(
-                    //     color: Colors.grey,
-                    //     fontSize: 12,
-                    //   ),
-                    // ),
-                  ],
-                ),
-              ),
+            for (var model in hotkeyService.list)
+            HotKeyItem(model: model)
           ],
         ),
         PreferenceListSection(

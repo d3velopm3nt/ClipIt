@@ -35,8 +35,7 @@ class ApplicationSettings extends SettingsSection {
         leading: const Icon(Icons.window),
         initialValue: settingProvider.appSettings.windowMode,
         onToggle: (value) {
-         
-
+          enableWindowMode(value);
         },
         onPressed: (context) => {},
       ),
@@ -52,8 +51,17 @@ class ApplicationSettings extends SettingsSection {
             onPressed: () {
               saveDockToSide();
             }),
+        onToggle: (value) {},
+        onPressed: (context) => {},
+      ),
+      SettingsTile.switchTile(
+        title: const TitleDesc(
+            title: 'Launch At Startup',
+            description: 'Start the application when windows starts up'),
+        leading: const Icon(Icons.rocket_launch),
+        initialValue: settingProvider.appSettings.launchAtStartup,
         onToggle: (value) {
-         
+          enableLaunchAtStartup(value);
         },
         onPressed: (context) => {},
       )
@@ -75,6 +83,12 @@ class ApplicationSettings extends SettingsSection {
   enableWindowMode(bool value) async {
     settingProvider.enableWindowMode(value);
     settingProvider.appSettings.windowMode = value;
+    await settingProvider.saveSettings();
+  }
+
+  enableLaunchAtStartup(bool value) async {
+    settingProvider.launchAtStartup(value);
+    settingProvider.appSettings.launchAtStartup = value;
     await settingProvider.saveSettings();
   }
 }

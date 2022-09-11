@@ -29,7 +29,8 @@ class QuickView extends StatelessWidget {
                 child: TitleDesc(
                     title: 'Quick Select',
                     titleStyle: TextStyle(fontSize: 15),
-                    description: 'assign tags and groups to clip'),
+                    description: 'assign tags and groups to clip',
+                   ),
               )),
               Padding(
                   padding: const EdgeInsets.only(top: 8, bottom: 8),

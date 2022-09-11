@@ -13,6 +13,8 @@ class HotKeyModel extends HiveObject {
   List<String> modifiers;
   @HiveField(4)
   String clipId;
+  @HiveField(5)
+  String title;
 
-  HotKeyModel(this.id,this.keyCode, this.modifiers,this.clipId);
+  HotKeyModel(this.id, this.keyCode, this.modifiers, this.clipId,this.title);
 }

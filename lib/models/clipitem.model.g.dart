@@ -22,13 +22,14 @@ class ClipItemAdapter extends TypeAdapter<ClipItem> {
       fields[3] == null ? false : fields[3] as bool,
       fields[4] == null ? [] : (fields[4] as List).cast<String>(),
       fields[0] as int,
+      fields[5] == null ? false : fields[5] as bool,
     );
   }
 
   @override
   void write(BinaryWriter writer, ClipItem obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ClipItemAdapter extends TypeAdapter<ClipItem> {
       ..writeByte(3)
       ..write(obj.favorite)
       ..writeByte(4)
-      ..write(obj.tags);
+      ..write(obj.tags)
+      ..writeByte(5)
+      ..write(obj.secure);
   }
 
   @override

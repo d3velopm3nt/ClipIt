@@ -1,7 +1,7 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
+import 'package:flutter_my_clipboard/models/hotkey.model.dart';
 import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
@@ -11,12 +11,14 @@ import '../../../navigation/clip.navigation.dart';
 import '../../../services/clip_manager_service.dart';
 import '../../../services/clip_tag_service.dart';
 import '../../../services/datetime_service.dart';
+import '../../../settings/services/settings_service.dart';
 import '../../../theme/theme_changer.dart';
+import '../shared/confirm_dialog.dart';
 import '../shared/record_hotkey_dialog.dart';
 import '../tag/tag_badge_widget.dart';
 
 // This is the type used by the popup menu below.
-enum Menu { favorite, tag, group, delete, hotkey }
+enum Menu { favorite, tag, group, delete, hotkey, secure }
 
 class ClipItemWidget extends StatelessWidget {
   final ClipItem clip;
@@ -26,17 +28,21 @@ class ClipItemWidget extends StatelessWidget {
 
   late ClipManager manager;
 
+  SettingsService settings = SettingsService();
+
   late ThemeChanger theme;
 
   late HotKeyService hotkeyService;
-  bool hasHotKey = false;
+  late HotKeyModel? hotKey;
 
   @override
   Widget build(BuildContext context) {
     manager = Provider.of<ClipManager>(context);
+    hotkeyService = Provider.of<HotKeyService>(context);
     final tagManager = Provider.of<ClipTagService>(context);
     theme = Provider.of<ThemeChanger>(context);
-
+    settings = Provider.of<SettingsService>(context);
+    hotKey = hotkeyService.getHotKeyByClipId(clip.id.toString());
     return Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
@@ -90,15 +96,30 @@ class ClipItemWidget extends StatelessWidget {
                       children: [
                         //Copied Text
                         Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8, left: 2, bottom: 8, right: 2),
-                          child: ExpandableText(clip.copiedText,
-                              maxLines: 3,
-                              expandOnTextTap: true,
-                              collapseOnTextTap: true,
-                              expandText: '',
-                              collapseText: ''),
-                        ),
+                            padding: const EdgeInsets.only(
+                                top: 8, left: 2, bottom: 8, right: 2),
+                            child: Column(
+                              children: [
+                                Visibility(
+                                    visible: clip.secure,
+                                    child: Center(
+                                        child: Column(
+                                      children: const [
+                                        Icon(Icons.lock, size: 30),
+                                        //Text("Secure")
+                                      ],
+                                    ))),
+                                Visibility(
+                                  visible: !clip.secure,
+                                  child: ExpandableText(clip.copiedText,
+                                      maxLines: 3,
+                                      expandOnTextTap: true,
+                                      collapseOnTextTap: true,
+                                      expandText: '',
+                                      collapseText: ''),
+                                ),
+                              ],
+                            )),
                         //Tag Bages
                         Padding(
                           padding: const EdgeInsets.only(
@@ -177,6 +198,10 @@ class ClipItemWidget extends StatelessWidget {
                   case Menu.group:
                     break;
                   case Menu.delete:
+                    _delete(context);
+                    break;
+                  case Menu.secure:
+                    updateSecure();
                     break;
                 }
               },
@@ -203,6 +228,11 @@ class ClipItemWidget extends StatelessWidget {
                       child: buildMenuItem('Group', Icons.group, null),
                     ),
                     PopupMenuItem<Menu>(
+                      value: Menu.secure,
+                      child: buildMenuItem(clip.secure ? 'Unlock' : 'Lock',
+                          clip.secure ? Icons.lock_open : Icons.lock, null),
+                    ),
+                    PopupMenuItem<Menu>(
                       value: Menu.delete,
                       child: buildMenuItem('Delete', Icons.delete, null),
                     ),
@@ -222,9 +252,14 @@ class ClipItemWidget extends StatelessWidget {
             ),
           ),
           Visibility(
-              visible: hasHotKey,
-              child: const Icon(Icons.local_fire_department,
-                  size: 17, color: Color.fromARGB(255, 235, 118, 8))),
+              visible: hotKey == null ? false : true,
+              child: IconButton(
+                  icon: const Icon(Icons.local_fire_department,
+                      size: 17, color: Color.fromARGB(255, 235, 118, 8)),
+                  onPressed: () {},
+                  splashRadius: 15,
+                  tooltip:
+                      "${hotKey?.modifiers[0]} + ${hotKey?.keyCode.replaceAll("key", "")}")),
         ],
       ),
     );
@@ -236,8 +271,8 @@ class ClipItemWidget extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return RecordHotKeyDialog(
-            onHotKeyRecorded: (newHotKey) => {
-                  hotkeyService.saveHotKey(newHotKey, clip.id.toString()),
+            onHotKeyRecorded: (newHotKey,title) => {
+                  hotkeyService.saveHotKey(newHotKey, clip.id.toString(),title),
                   AppNotification.saveNotification("New HotKey has been assign",
                       "Now you can use the hot key to copy and paste the clip text")
                 });
@@ -260,8 +295,24 @@ class ClipItemWidget extends StatelessWidget {
     return showSnackBar("Clip Deleted");
   }
 
+  void _delete(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return ConfirmDailog(
+              onConfirm: (confirm) async => {
+                    if (confirm) {manager.deleteClip(clip)}
+                  });
+        });
+  }
+
   updateFavorite() async {
     clip.favorite = clip.favorite ? false : true;
+    await manager.updateClip(clip);
+  }
+
+  updateSecure() async {
+    clip.secure = clip.secure ? false : true;
     await manager.updateClip(clip);
   }
 
@@ -279,6 +330,8 @@ class ClipItemWidget extends StatelessWidget {
   copyToClipboard() async {
     ClipboardData data = ClipboardData(text: clip.copiedText);
     Clipboard.setData(data);
-   
+    if (settings.appSettings.hideClipboardAfterCopy) {
+      WindowManager.instance.hide();
+    }
   }
 }

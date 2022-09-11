@@ -1,5 +1,4 @@
 import 'package:hive/hive.dart';
-import 'package:hotkey_manager/hotkey_manager.dart';
 
 part 'clipitem.model.g.dart';
 
@@ -15,6 +14,8 @@ class ClipItem extends HiveObject {
   bool favorite;
   @HiveField(4, defaultValue: [])
   List<String> tags;
+  @HiveField(5,defaultValue: false)
+  bool secure;
 
-  ClipItem(this.copiedText, this.datetime, this.favorite, this.tags, this.id);
+  ClipItem(this.copiedText, this.datetime, this.favorite, this.tags, this.id,this.secure);
 }

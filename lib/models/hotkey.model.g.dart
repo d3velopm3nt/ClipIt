@@ -21,13 +21,14 @@ class HotKeyAdapter extends TypeAdapter<HotKeyModel> {
       fields[1] as String,
       (fields[2] as List).cast<String>(),
       fields[4] as String,
+      fields[5] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, HotKeyModel obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class HotKeyAdapter extends TypeAdapter<HotKeyModel> {
       ..writeByte(2)
       ..write(obj.modifiers)
       ..writeByte(4)
-      ..write(obj.clipId);
+      ..write(obj.clipId)
+      ..writeByte(5)
+      ..write(obj.title);
   }
 
   @override

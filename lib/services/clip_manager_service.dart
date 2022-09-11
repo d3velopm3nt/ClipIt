@@ -17,8 +17,8 @@ class ClipManager extends ChangeNotifier {
 
   loadClipBox() async {
     //if (!Hive.isBoxOpen(clipBoxName)) {
-      clipBox = await Hive.openBox<ClipItem>(clipBoxName);
-   // }
+    clipBox = await Hive.openBox<ClipItem>(clipBoxName);
+    // }
 
     _clips = List<ClipItem>.from(clipBox.values.toList());
   }
@@ -39,7 +39,7 @@ class ClipManager extends ChangeNotifier {
 
   saveClip(String text) async {
     var clip = ClipItem(
-        text, DateTimeService.currentDate, false, [], _clips.length + 1);
+        text, DateTimeService.currentDate, false, [], _clips.length + 1,false);
     //Add to Hive Box
     if (clipBox.containsKey(clip.key)) {
       clip.save();
@@ -57,17 +57,16 @@ class ClipManager extends ChangeNotifier {
   }
 
   updateClip(ClipItem item) async {
-    Stopwatch sw = Stopwatch();
-    sw.start();
     item.save();
-    sw.stop();
-    print("update item - ${sw.elapsedMilliseconds}");
     await refreshClips();
+    AppNotification.infoNotification('Clip Updated', "");
   }
 
   deleteClip(ClipItem item) async {
     item.delete();
     await refreshClips();
+    AppNotification.deleteNotifcation(
+        'Clip Deleted', "You should not see this anymore");
   }
 
   removeClipTags(String id) async {
@@ -82,8 +81,8 @@ class ClipManager extends ChangeNotifier {
     await refreshClips();
   }
 
- Future<ClipItem> getClipById(String id) async  {
-  await loadClipBox();
+  ClipItem getClipById(String id)  {
+    //await loadClipBox();
     var clip = _clips.where((c) => c.id.toString() == id);
     return clip.first;
   }
@@ -102,8 +101,6 @@ class ClipManager extends ChangeNotifier {
         .toList();
     notifyListeners();
   }
-
-  
 }
 
 extension Sorting on List<ClipItem> {

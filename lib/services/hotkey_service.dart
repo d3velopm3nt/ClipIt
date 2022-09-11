@@ -2,11 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_my_clipboard/models/hotkey.model.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
-import 'package:window_manager/window_manager.dart';
 import '../app/app.notification.dart';
 import '../hotkey/keyboard_simulator.dart';
 import '../navigation/app.navigation.dart';
-import '../navigation/clip.navigation.dart';
 import '../ui/display_manager.dart';
 import 'box/box_serice_base.dart';
 import 'clip_manager_service.dart';
@@ -19,10 +17,10 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
   @override
   late String boxName = "hotkeys";
 
-  Future<bool> saveHotKey(HotKey key, String clipId) async {
+  Future<bool> saveHotKey(HotKey key, String clipId, String title) async {
     if (await _registerHotKey(key)) {
       HotKeyModel model = HotKeyModel(key.identifier, key.keyCode.name,
-          _mapModifiersToModel(key.modifiers), clipId);
+          _mapModifiersToModel(key.modifiers), clipId, title);
       await save(model);
       return true;
     } else {
@@ -30,8 +28,17 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     }
   }
 
+  buildHotKey(HotKeyModel key) {
+    return HotKey(
+      _getKeyCodeEnum(key.keyCode),
+      modifiers: _mapModifiersFromModel(key.modifiers),
+      identifier: key.id,
+    );
+  }
+
   Future<bool> _registerHotKey(HotKey key) async {
-    if (!hotKeyManager.registeredHotKeyList.any((element) => element.keyCode == key.keyCode)) {
+    if (!hotKeyManager.registeredHotKeyList
+        .any((element) => element.keyCode == key.keyCode)) {
       await hotKeyManager.register(
         key,
         keyDownHandler: _keyDownHandler,
@@ -59,16 +66,19 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
   _keyDownHandler(HotKey key) async {
     //Check if key is registred again clip then copy and past text
     var model = list.where((k) => k.id == key.identifier).first;
-    if (model != null) {
-      var clip = await clipManager.getClipById(model.clipId);
-      ClipboardData data = ClipboardData(text: clip.copiedText);
-      await Clipboard.setData(data);
-      await Future.delayed(const Duration(milliseconds: 500));
-      KeyboardSimulator.paste();
-    }
+    var clip = clipManager.getClipById(model.clipId);
+    ClipboardData data = ClipboardData(text: clip.copiedText);
+    await Clipboard.setData(data);
+    await Future.delayed(const Duration(milliseconds: 500));
+    KeyboardSimulator.paste();
   }
 
-  Future<void> load() async {
+  getHotkeyClip(String id) {
+    return clipManager.getClipById(id);
+  }
+
+  Future<void> load(ClipManager clipManager) async {
+    this.clipManager = clipManager;
     _registeredHotKeyList = [];
     await hotKeyManager.unregisterAll();
     await loadBox();
@@ -90,26 +100,20 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
       await hotKeyManager.register(
         hotKey,
         keyDownHandler: (hotKey) {
-          if(AppRoutes.quickSelect == AppNavigation.currentRoute){
-        AppNavigation.navigateToRoute(AppRoutes.home);
+          if (AppRoutes.quickSelect == AppNavigation.currentRoute) {
+            AppNavigation.navigateToRoute(AppRoutes.home);
           }
-        DisplayManager.clipboardView();
+          DisplayManager.clipboardView();
         },
       );
     }
   }
 
   _loadSavedKeys() async {
-    var keys = list
-        .map((key) => HotKey(
-              _getKeyCodeEnum(key.keyCode),
-              modifiers: _mapModifiersFromModel(key.modifiers),
-              identifier: key.id,
-            ))
-        .toList();
+    var keys = list.map((key) => buildHotKey(key)).toList();
 
     for (var i = 0; i < keys.length; i++) {
-     await _registerHotKey(keys[i]);
+      await _registerHotKey(keys[i]);
     }
   }
 

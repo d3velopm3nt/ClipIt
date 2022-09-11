@@ -7,7 +7,6 @@ import 'package:flutter_my_clipboard/ui/display_manager.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:flutter_my_clipboard/services/clip_manager_service.dart';
-import 'package:window_manager/window_manager.dart';
 import '../../../navigation/clip.navigation.dart';
 import '../../../navigation/navigation_manager.dart';
 import '../../../services/clip_tag_service.dart';
@@ -49,7 +48,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       await settingService.loadSettings(theme);
       await tagManager.loadTags();
       await _manager.loadClips();
-      await hotKeyService.load();
+      await hotKeyService.load(_manager);
     });
     super.initState();
   }
@@ -59,13 +58,17 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     ClipboardData? newClipboardData =
         await Clipboard.getData(Clipboard.kTextPlain);
     var newText = newClipboardData?.text ?? "";
-    if (newText != "" && !_manager.clips.any((x) => x.copiedText == newText)) {
-      _manager.saveClip(newText);
-    } else if (newText != "") {
-      await _manager.updateClipDate(newText);
+    if (newText != "") {
+      if (!_manager.clips.any((x) => x.copiedText == newText)) {
+        _manager.saveClip(newText);
+      } else if (newText != "") {
+        await _manager.updateClipDate(newText);
+      }
+      //Show if enabled in settings and not copied from clipboard
+      if (settingService.appSettings.showQuickSelect) {
+        await DisplayManager.quickView();
+      }
     }
-
-   await DisplayManager.quickView();
   }
 
   openSettings() async {

@@ -1,11 +1,14 @@
+import 'dart:io';
+
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
 import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
 import 'package:flutter_my_clipboard/theme/theme_changer.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:launch_at_startup/launch_at_startup.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
-import 'package:screen_retriever/screen_retriever.dart';
 import 'package:window_manager/window_manager.dart';
 import 'models/clipitem.model.dart';
 import 'models/cliptag.model.dart';
@@ -33,6 +36,14 @@ void main() async {
   AppSystemTray tray = AppSystemTray();
   //Sytem Tray initialized
   await tray.initSystemTray();
+  //Setup Launch At Startup
+  PackageInfo packageInfo = await PackageInfo.fromPlatform();
+
+  LaunchAtStartup.instance.setup(
+    appName: packageInfo.appName,
+    appPath: Platform.resolvedExecutable,
+  );
+
   // Use it only after calling `hiddenWindowAtLaunch`
   WindowManager.instance.waitUntilReadyToShow().then((_) async {
     WindowManager.instance.hide();
