@@ -5,6 +5,7 @@ import 'package:flutter_my_clipboard/models/hotkey.model.dart';
 import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:provider/provider.dart';
 import 'package:window_manager/window_manager.dart';
+import '../../../app/app.config.dart';
 import '../../../app/app.notification.dart';
 import '../../../models/clipitem.model.dart';
 import '../../../navigation/clip.navigation.dart';
@@ -271,8 +272,9 @@ class ClipItemWidget extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return RecordHotKeyDialog(
-            onHotKeyRecorded: (newHotKey,title) => {
-                  hotkeyService.saveHotKey(newHotKey, clip.id.toString(),title),
+            onHotKeyRecorded: (newHotKey, title) => {
+                  hotkeyService.saveHotKey(
+                      newHotKey, clip.id.toString(), title),
                   AppNotification.saveNotification("New HotKey has been assign",
                       "Now you can use the hot key to copy and paste the clip text")
                 });
@@ -328,6 +330,7 @@ class ClipItemWidget extends StatelessWidget {
   }
 
   copyToClipboard() async {
+    AppConfig.copiedFromClipboard = true;
     ClipboardData data = ClipboardData(text: clip.copiedText);
     Clipboard.setData(data);
     if (settings.appSettings.hideClipboardAfterCopy) {

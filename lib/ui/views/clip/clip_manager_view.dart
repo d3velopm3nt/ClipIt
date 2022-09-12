@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:clipboard_watcher/clipboard_watcher.dart';
+import 'package:flutter_my_clipboard/app/app.config.dart';
 import 'package:flutter_my_clipboard/services/hotkey_service.dart';
 import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
 import 'package:flutter_my_clipboard/ui/display_manager.dart';
@@ -16,15 +17,6 @@ import 'clip_menu.dart';
 
 class ClipManagerPage extends StatefulWidget {
   const ClipManagerPage({Key? key}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   @override
   State<ClipManagerPage> createState() => _ClipManagerPageState();
@@ -53,21 +45,25 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     super.initState();
   }
 
+  static String lastclip = "";
   @override
   void onClipboardChanged() async {
     ClipboardData? newClipboardData =
         await Clipboard.getData(Clipboard.kTextPlain);
     var newText = newClipboardData?.text ?? "";
-    if (newText != "") {
+    if (newText != "" && newText != lastclip) {
+      lastclip = newText;
       if (!_manager.clips.any((x) => x.copiedText == newText)) {
         _manager.saveClip(newText);
       } else if (newText != "") {
         await _manager.updateClipDate(newText);
       }
       //Show if enabled in settings and not copied from clipboard
-      if (settingService.appSettings.showQuickSelect) {
+      if (settingService.appSettings.showQuickSelect &&
+          !AppConfig.copiedFromClipboard) {
         await DisplayManager.quickView();
       }
+      AppConfig.copiedFromClipboard = false;
     }
   }
 
