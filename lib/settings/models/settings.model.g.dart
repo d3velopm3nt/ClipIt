@@ -25,13 +25,14 @@ class SettingsAdapter extends TypeAdapter<SettingsModel> {
       fields[3] as int,
       fields[7] as bool,
       fields[8] == null ? false : fields[8] as bool,
+      fields[9] == null ? false : fields[9] as bool,
     )..windowMode = fields[1] as bool;
   }
 
   @override
   void write(BinaryWriter writer, SettingsModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(10)
       ..writeByte(0)
       ..write(obj.darkMode)
       ..writeByte(1)
@@ -49,7 +50,9 @@ class SettingsAdapter extends TypeAdapter<SettingsModel> {
       ..writeByte(7)
       ..write(obj.hideClipboardAfterCopy)
       ..writeByte(8)
-      ..write(obj.showQuickSelect);
+      ..write(obj.showQuickSelect)
+      ..writeByte(9)
+      ..write(obj.setupDone);
   }
 
   @override

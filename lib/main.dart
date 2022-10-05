@@ -9,6 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
+import 'package:screen_loader/screen_loader.dart';
 import 'package:window_manager/window_manager.dart';
 import 'models/clipitem.model.dart';
 import 'models/cliptag.model.dart';
@@ -17,7 +18,6 @@ import 'navigation/navigation_manager.dart';
 import 'services/clip_manager_service.dart';
 import 'services/hotkey_service.dart';
 import 'settings/models/settings.model.dart';
-import 'ui/display_manager.dart';
 import 'ui/views/main_view.dart';
 import 'ui/widgets/shared/app_system_tray.dart';
 
@@ -29,6 +29,13 @@ void main() async {
   Hive.registerAdapter(ClipTagAdapter());
   Hive.registerAdapter(HotKeyAdapter());
   Hive.registerAdapter(SettingsAdapter());
+
+  configScreenLoader(
+    loader: const AlertDialog(
+      title: Text('Gobal Loader..'),
+    ),
+    bgBlur: 20.0,
+  );
 
   // Ensure Windows  Manager is initialized
   await WindowManager.instance.ensureInitialized();
@@ -48,7 +55,8 @@ void main() async {
   WindowManager.instance.waitUntilReadyToShow().then((_) async {
     WindowManager.instance.hide();
     //Set to frameless window
-    DisplayManager.clipboardView();
+    // DisplayManager.clipboardView();p
+    WindowManager.instance.setSkipTaskbar(true);
   });
 }
 

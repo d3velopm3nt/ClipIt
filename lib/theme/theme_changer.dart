@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ThemeChanger extends ChangeNotifier {
   late ThemeData _themeData = lightTheme;
   bool _darkMode = false;
-  Color primaryColor = const Color.fromARGB(255, 159, 33, 243);
+ Color primaryColor = const Color.fromARGB(255, 159, 33, 243);
   //Color primaryDarkColor = Colors.red;
   Color? secondaryColor = Colors.greenAccent[400];
   ThemeChanger();

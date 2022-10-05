@@ -44,7 +44,7 @@ class SettingsService extends BoxServiceBase<SettingsModel>
         themeChanger.setSecondColor(Color(_settings.secondaryColor));
       }
     } else {
-      _settings = SettingsModel(false, true, false, false, 0, 0, false, false);
+      _settings = SettingsModel(false, true, false, false, 0, 0, false, false,false);
       await save(_settings);
     }
   }
@@ -85,6 +85,7 @@ class SettingsService extends BoxServiceBase<SettingsModel>
 
   dockToSide() async {
     var display = await screenRetriever.getPrimaryDisplay();
+    await WindowManager.instance.setAsFrameless();
     await WindowManager.instance.setSize(Size(300, display.size.height - 40));
     await WindowManager.instance
         .setAlignment(Alignment.topRight, animate: true);

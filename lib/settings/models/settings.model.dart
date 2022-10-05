@@ -22,7 +22,17 @@ class SettingsModel extends HiveObject {
   bool hideClipboardAfterCopy;
   @HiveField(8, defaultValue: false)
   bool showQuickSelect;
+  @HiveField(9, defaultValue: false)
+  bool setupDone;
 
-  SettingsModel(this.alwaysOnTop, this.dockToSide, this.launchAtStartup,
-      this.darkMode, this.primaryColor, this.secondaryColor, this.hideClipboardAfterCopy, this.showQuickSelect);
+  SettingsModel(
+      this.alwaysOnTop,
+      this.dockToSide,
+      this.launchAtStartup,
+      this.darkMode,
+      this.primaryColor,
+      this.secondaryColor,
+      this.hideClipboardAfterCopy,
+      this.showQuickSelect,
+      this.setupDone);
 }

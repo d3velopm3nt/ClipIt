@@ -30,12 +30,12 @@ class _ClipMenuState extends State<ClipMenu> {
                   ClipNavigation.navigateToRoute(ClipRoutes.clipboard);
                 }),
             AppMenuItem(
-              route: ClipRoutes.dates,
+              route: ClipRoutes.calendar,
                 icon: Icons.calendar_month,
                 label: "Calendar",
                 onPressed: () {
                    navigation.pageLoading(true);
-                  ClipNavigation.navigateToRoute(ClipRoutes.dates);
+                  ClipNavigation.navigateToRoute(ClipRoutes.calendar);
                 }),
             AppMenuItem(
               route: ClipRoutes.tags, 

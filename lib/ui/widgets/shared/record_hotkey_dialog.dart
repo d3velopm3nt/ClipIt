@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_my_clipboard/models/hotkey.model.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:provider/provider.dart';
+
+import '../../../services/hotkey_service.dart';
+import 'confirm_dialog.dart';
 
 class RecordHotKeyDialog extends StatefulWidget {
   final Function(HotKey, String) onHotKeyRecorded;
+  final HotKeyModel? hotkey;
 
   const RecordHotKeyDialog({
     Key? key,
     required this.onHotKeyRecorded,
+    this.hotkey,
   }) : super(key: key);
 
   @override
@@ -16,21 +23,24 @@ class RecordHotKeyDialog extends StatefulWidget {
 class _RecordHotKeyDialogState extends State<RecordHotKeyDialog> {
   HotKey? _hotKey;
   final titleControl = TextEditingController();
-  bool titleSelected = true;
+  HotKeyService service = HotKeyService();
   @override
   Widget build(BuildContext context) {
+    service = Provider.of<HotKeyService>(context);
+    if (widget.hotkey != null) {
+      _hotKey = service.buildHotKey(widget.hotkey as HotKeyModel);
+      titleControl.text = widget.hotkey?.title as String;
+    }
     return AlertDialog(
       // title: Text('Rewind and remember'),
       content: SingleChildScrollView(
         child: ListBody(
           children: <Widget>[
-            const Text('Press the keys you want to use'),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Text('Press the keys you want to use'),
+            ),
             TextField(
-                onTap: () {
-                  setState(() {
-                    titleSelected = true;
-                  });
-                },
                 controller: titleControl,
                 decoration: const InputDecoration(
                     labelText: "Title",
@@ -43,8 +53,8 @@ class _RecordHotKeyDialogState extends State<RecordHotKeyDialog> {
                           width: 3,
                         )))),
             Container(
-              width: 100,
-              height: 60,
+              width: 250,
+              height: 80,
               margin: const EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                 border: Border.all(
@@ -54,17 +64,13 @@ class _RecordHotKeyDialogState extends State<RecordHotKeyDialog> {
               child: Stack(
                 alignment: Alignment.center,
                 children: [
-                  GestureDetector(
-                    onTap: () {
+                  HotKeyRecorder(
+                    initalHotKey: _hotKey,
+                    onHotKeyRecorded: (hotKey) {
                       setState(() {
-                        titleSelected = false;
+                        _hotKey = hotKey;
                       });
                     },
-                    child: HotKeyRecorder(
-                      onHotKeyRecorded: (hotKey) {
-                        _hotKey = hotKey;
-                      },
-                    ),
                   ),
                 ],
               ),
@@ -73,6 +79,19 @@ class _RecordHotKeyDialogState extends State<RecordHotKeyDialog> {
         ),
       ),
       actions: <Widget>[
+        Visibility(
+          visible: widget.hotkey != null,
+          child: TextButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all(Colors.red)),
+            child: const Text('Remove',
+                style: TextStyle(
+                    fontWeight: FontWeight.w600, color: Colors.white)),
+            onPressed: () {
+              _delete(context);
+            },
+          ),
+        ),
         TextButton(
           child: const Text('Cancel'),
           onPressed: () {
@@ -90,5 +109,21 @@ class _RecordHotKeyDialogState extends State<RecordHotKeyDialog> {
         ),
       ],
     );
+  }
+
+  void _delete(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return ConfirmDailog(
+              question: 'Do you want to remove the hot key?',
+              onConfirm: (confirm) async => {
+                    if (confirm)
+                      {
+                        service.delete(widget.hotkey),
+                        Navigator.of(context).pop()
+                      }
+                  });
+        });
   }
 }

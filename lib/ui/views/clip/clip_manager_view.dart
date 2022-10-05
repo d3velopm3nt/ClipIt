@@ -41,7 +41,12 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       await tagManager.loadTags();
       await _manager.loadClips();
       await hotKeyService.load(_manager);
+
+       if (!settingService.appSettings.setupDone) {
+      DisplayManager.introView();
+    }
     });
+    
     super.initState();
   }
 
@@ -55,15 +60,15 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       lastclip = newText;
       if (!_manager.clips.any((x) => x.copiedText == newText)) {
         _manager.saveClip(newText);
-      } else if (newText != "") {
-        await _manager.updateClipDate(newText);
-      }
       //Show if enabled in settings and not copied from clipboard
       if (settingService.appSettings.showQuickSelect &&
           !AppConfig.copiedFromClipboard) {
         await DisplayManager.quickView();
       }
       AppConfig.copiedFromClipboard = false;
+      } else if (newText != "") {
+        await _manager.updateClipDate(newText);
+      }
     }
   }
 
@@ -83,6 +88,9 @@ class _ClipManagerPageState extends State<ClipManagerPage>
     _manager = Provider.of<ClipManager>(context);
     tagManager = Provider.of<ClipTagService>(context);
     hotKeyService = Provider.of<HotKeyService>(context);
+
+   
+
     return Scaffold(
       appBar: AppBar(
         title: navigation.isNavMain

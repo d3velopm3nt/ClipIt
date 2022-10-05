@@ -17,4 +17,10 @@ class DateTimeService {
         "${dt.year.toString()}-${dt.month.toString().padLeft(2, '0')}-${dt.day.toString().padLeft(2, '0')}";
     return date;
   }
+
+  static String getMonth(String datetime){
+      DateTime dt = DateTime.parse(datetime);
+    var date = dt.month.toString().padLeft(2, '0');
+    return date;
+  }
 }

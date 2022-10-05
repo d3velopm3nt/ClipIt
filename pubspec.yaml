@@ -52,6 +52,8 @@ dependencies:
   leak_detector: ^1.0.1+4
   launch_at_startup: ^0.1.9
   package_info_plus: ^1.4.3+1
+  screen_loader: ^4.0.1
+  introduction_screen: ^3.0.2
   
 
 dev_dependencies:
@@ -81,6 +83,7 @@ flutter:
   assets:
   - assets/
   - assets/libs/
+  - assets/intro/
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

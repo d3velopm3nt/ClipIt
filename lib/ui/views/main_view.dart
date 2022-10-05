@@ -9,16 +9,17 @@ class MainWindow extends StatefulWidget {
 }
 
 class _MainWindowState extends State<MainWindow> {
-
+  String initialRoute = "/";
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       body: Navigator(
-          key: AppNavigation.nav,
-          initialRoute: '/',
-          onGenerateRoute: (RouteSettings route) =>
-              AppNavigation.navigationRoutes(route.name, route.arguments),
-        ),
+        key: AppNavigation.nav,
+        initialRoute: initialRoute,
+        onGenerateRoute: (RouteSettings route) =>
+            AppNavigation.navigationRoutes(route.name, route.arguments),
+      ),
     );
   }
 }

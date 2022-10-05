@@ -12,7 +12,7 @@ class BoxServiceBase<T> extends ChangeNotifier
   @override
   late String boxName;
   List<T> _list = [];
-  @override
+  @override 
   List<T> get list => _list;
 
   @override
@@ -28,9 +28,9 @@ class BoxServiceBase<T> extends ChangeNotifier
   }
 
   @override
-  Future<void> delete(T) async {
+  Future<void> delete(key) async {
     try {
-      T.delete();
+    key.delete();
       await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(

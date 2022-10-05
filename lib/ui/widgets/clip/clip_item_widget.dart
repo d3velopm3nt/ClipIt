@@ -272,6 +272,7 @@ class ClipItemWidget extends StatelessWidget {
       barrierDismissible: false,
       builder: (BuildContext context) {
         return RecordHotKeyDialog(
+            hotkey: hotKey ,
             onHotKeyRecorded: (newHotKey, title) => {
                   hotkeyService.saveHotKey(
                       newHotKey, clip.id.toString(), title),

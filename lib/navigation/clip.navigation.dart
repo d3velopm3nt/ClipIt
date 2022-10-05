@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/views/clip/clip_collection_view.dart';
 import 'package:flutter_my_clipboard/ui/views/saved/clip_favorite_view.dart';
+import '../ui/views/calendar/calendar_view.dart';
 import '../ui/views/saved/hotkeys_view.dart';
 import '../models/clipitem.model.dart';
 import '../ui/views/clip/clip_tags_view.dart';
@@ -13,14 +14,16 @@ class ClipNavigation {
   static String previousRoute = "";
   static String currentRoute = ClipRoutes.clipboard;
 
-  static navigationRoutes(String? name, [Object? args]) {
+  static navigationRoutes(String? name, [dynamic args]) {
     Widget page;
     previousRoute = (previousRoute == "" ? name : currentRoute)!;
     currentRoute = name!;
-
     switch (name) {
-      case ClipRoutes.dates:
-        page = const ClipCollectionView();
+      case ClipRoutes.calendar:
+        page = CalendarView();
+        break;
+      case ClipRoutes.clipCollection:
+        page = ClipCollectionView(clips: args["clips"] ,title: args["title"],color: args["color"]);
         break;
       case SavedRoutes.favorites:
         page = const ClipFavoriteView();
@@ -71,7 +74,8 @@ class ClipNavigation {
 
 class ClipRoutes {
   static const String clipboard = "/board";
-  static const String dates = "/calendar";
+  static const String calendar = "/calendar";
+  static const String clipCollection = "/clipCollection";
   static const String tags = "/tags";
   static const String tagSelector = '/tag-selector';
 }

@@ -10,6 +10,7 @@ class ClipManager extends ChangeNotifier {
   List<ClipItem> get clips => _clips;
   List<ClipItem> _filteredList = [];
   List<ClipItem> get filteredList => _filteredList;
+
   late Box clipBox;
   final clipBoxName = "clipBox";
 
@@ -39,7 +40,7 @@ class ClipManager extends ChangeNotifier {
 
   saveClip(String text) async {
     var clip = ClipItem(
-        text, DateTimeService.currentDate, false, [], _clips.length + 1,false);
+        text, DateTimeService.currentDate, false, [], _clips.length + 1, false);
     //Add to Hive Box
     if (clipBox.containsKey(clip.key)) {
       clip.save();
@@ -81,7 +82,7 @@ class ClipManager extends ChangeNotifier {
     await refreshClips();
   }
 
-  ClipItem getClipById(String id)  {
+  ClipItem getClipById(String id) {
     //await loadClipBox();
     var clip = _clips.where((c) => c.id.toString() == id);
     return clip.first;
@@ -91,6 +92,23 @@ class ClipManager extends ChangeNotifier {
     var filtered = _clips.where((element) =>
         DateTimeService.getDate(element.datetime) ==
         DateTimeService.getDate(date.toString()));
+    return filtered.toList();
+  }
+
+  List<ClipItem> getByMonth(int month) {
+    var filtered = _clips
+        .where((element) => DateTime.parse(element.datetime).month == month);
+    return filtered.toList();
+  }
+
+  List<ClipItem> getByDateRange(DateTime fromDate, DateTime toDate) {
+    var filtered;
+    for (var i = 0; i < clips.length; i++) {
+      DateTime date = DateTime.parse(clips[i].datetime);
+      if (date.compareTo(fromDate) <= 0 && date.compareTo(toDate) <= 0) {
+        filtered.add(clips[i]);
+      }
+    }
     return filtered.toList();
   }
 

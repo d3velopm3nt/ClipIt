@@ -28,12 +28,20 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     }
   }
 
-  buildHotKey(HotKeyModel key) {
+  HotKey buildHotKey(HotKeyModel key) {
     return HotKey(
       _getKeyCodeEnum(key.keyCode),
       modifiers: _mapModifiersFromModel(key.modifiers),
       identifier: key.id,
     );
+  }
+
+  @override
+  Future<void> delete(key) async {
+    var hkey = buildHotKey(key);
+    unRegisterHotKey(hkey);
+    //_registeredHotKeyList.removeWhere((x)=>x.identifier == hkey.identifier);
+    await super.delete(key);
   }
 
   Future<bool> _registerHotKey(HotKey key) async {
@@ -64,7 +72,7 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
   }
 
   _keyDownHandler(HotKey key) async {
-    //Check if key is registred again clip then copy and past text
+    //Check if key is registred again clip then copy and past textbuildHotKey(key)
     var model = list.where((k) => k.id == key.identifier).first;
     var clip = clipManager.getClipById(model.clipId);
     ClipboardData data = ClipboardData(text: clip.copiedText);

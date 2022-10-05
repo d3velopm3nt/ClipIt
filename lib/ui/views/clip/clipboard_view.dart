@@ -4,6 +4,7 @@ import '../../../navigation/navigation_manager.dart';
 import '../../../services/clip_manager_service.dart';
 import '../../../services/clip_tag_service.dart';
 import '../../widgets/clip/clip_item_widget.dart';
+import '../shared/no_results_view.dart';
 
 class ClipboardView extends StatelessWidget {
   ClipboardView({Key? key}) : super(key: key);
@@ -44,9 +45,29 @@ class ClipboardView extends StatelessWidget {
         ),
         const Divider(),
         Expanded(
-          child: ListView(children: [
-            ...manager.filteredList.map((clip) => ClipItemWidget(clip: clip))
-          ]),
+          child: Column(
+            children: [
+              Visibility(
+                visible: manager.filteredList.isNotEmpty,
+                child: Expanded(
+                  child: ListView(children: [
+                    ...manager.filteredList
+                        .map((clip) => ClipItemWidget(clip: clip))
+                  ]),
+                ),
+              ),
+              Visibility(
+                visible: !manager.filteredList.isNotEmpty,
+                child: Expanded(
+                  child: NoResultsView(
+                      image: "intro/copy.png",
+                      title: "No clippets saved",
+                      description:
+                          "Copy something to add it to your clipboard"),
+                ),
+              )
+            ],
+          ),
         )
       ],
     ));
