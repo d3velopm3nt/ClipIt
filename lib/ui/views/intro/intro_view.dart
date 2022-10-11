@@ -3,6 +3,7 @@ import 'package:flutter_my_clipboard/navigation/app.navigation.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:provider/provider.dart';
 
+import '../../../app/app.config.dart';
 import '../../../settings/services/settings_service.dart';
 import '../../display_manager.dart';
 
@@ -25,8 +26,12 @@ class _IntroViewState extends State<IntroView> {
     );
   }
 
-  openClipboard() async {
-    settingService.appSettings.setupDone = true;
+  openClipboard(bool done) async {
+    if (done) {
+      settingService.appSettings.setupDone = true;
+    } else {
+      AppConfig.introSkipped = true;
+    }
     await DisplayManager.clipboardView();
     AppNavigation.navigateToRoute(AppRoutes.home);
   }
@@ -66,10 +71,10 @@ class _IntroViewState extends State<IntroView> {
               backgroundColor: MaterialStateProperty.all(
                   const Color.fromARGB(255, 159, 33, 243))),
           child: const Text(
-            'Let\'s go right away!',
+            'Skip Intro',
             style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
           ),
-          onPressed: () => openClipboard(),
+          onPressed: () => openClipboard(false),
         ),
       ),
       pages: [
@@ -114,7 +119,7 @@ class _IntroViewState extends State<IntroView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: const [
               //Text("Click on ", style: bodyStyle),
-             // Icon(Icons.edit),
+              // Icon(Icons.edit),
               //Text(" to edit a post", style: bodyStyle),
             ],
           ),
@@ -123,7 +128,7 @@ class _IntroViewState extends State<IntroView> {
           //reverse: true,
         ),
       ],
-      onDone: () => openClipboard(),
+      onDone: () => openClipboard(true),
       //onSkip: () => _onIntroEnd(context), // You can override onSkip callback
       showSkipButton: false,
       skipOrBackFlex: 0,
@@ -133,7 +138,8 @@ class _IntroViewState extends State<IntroView> {
       back: const Icon(Icons.arrow_back),
       skip: const Text('Skip', style: TextStyle(fontWeight: FontWeight.w600)),
       next: const Icon(Icons.arrow_forward),
-      done: const Icon(Icons.check_circle), //Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
+      done: const Icon(Icons
+          .check_circle), //Text('Done', style: TextStyle(fontWeight: FontWeight.w600)),
       curve: Curves.fastLinearToSlowEaseIn,
       controlsMargin: const EdgeInsets.all(16),
       controlsPadding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),

@@ -42,8 +42,12 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       await _manager.loadClips();
       await hotKeyService.load(_manager);
 
-       if (!settingService.appSettings.setupDone) {
+       if (!settingService.appSettings.setupDone && !AppConfig.introSkipped) {
       DisplayManager.introView();
+    }
+    else
+    {
+      DisplayManager.clipboardView();
     }
     });
     

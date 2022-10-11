@@ -54,6 +54,8 @@ void main() async {
   // Use it only after calling `hiddenWindowAtLaunch`
   WindowManager.instance.waitUntilReadyToShow().then((_) async {
     WindowManager.instance.hide();
+    WindowManager.instance.setTitle("Clippet Desktop");
+     WindowManager.instance.setIcon("assets/app_icon.ico");
     //Set to frameless window
     // DisplayManager.clipboardView();p
     WindowManager.instance.setSkipTaskbar(true);

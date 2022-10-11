@@ -12,6 +12,7 @@ import '../../models/pinned.model.dart';
 class SettingsService extends BoxServiceBase<SettingsModel>
     implements SettingsServiceInterface {
   late SettingsModel _settings;
+  bool loaded = false;
   final Pinned _windowPinned = Pinned();
   Pinned get windowPinned => _windowPinned;
   @override
@@ -24,6 +25,7 @@ class SettingsService extends BoxServiceBase<SettingsModel>
 
   @override
   Future<void> loadSettings(ThemeChanger themeChanger) async {
+    if (loaded) return;
     await loadBox();
     if (list.isNotEmpty) {
       _settings = list.first;
@@ -33,6 +35,9 @@ class SettingsService extends BoxServiceBase<SettingsModel>
       _settings.alwaysOnTop ? pinWindow() : null;
       // Launch At Startup
       launchAtStartup(_settings.launchAtStartup);
+      //Enable Window Mode
+      enableWindowMode(_settings.windowMode);
+
       // dark mode
       themeChanger.setDarkMode(_settings.darkMode);
       // primary color
@@ -44,9 +49,11 @@ class SettingsService extends BoxServiceBase<SettingsModel>
         themeChanger.setSecondColor(Color(_settings.secondaryColor));
       }
     } else {
-      _settings = SettingsModel(false, true, false, false, 0, 0, false, false,false);
+      _settings =
+          SettingsModel(false, true, false, false, 0, 0, false, false, false);
       await save(_settings);
     }
+    loaded = true;
   }
 
   @override
@@ -85,8 +92,8 @@ class SettingsService extends BoxServiceBase<SettingsModel>
 
   dockToSide() async {
     var display = await screenRetriever.getPrimaryDisplay();
-    await WindowManager.instance.setAsFrameless();
-    await WindowManager.instance.setSize(Size(300, display.size.height - 40));
+    //await WindowManager.instance.setAsFrameless();
+    await WindowManager.instance.setSize(Size(350, display.size.height - 40));
     await WindowManager.instance
         .setAlignment(Alignment.topRight, animate: true);
     notifyListeners();
