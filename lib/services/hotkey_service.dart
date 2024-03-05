@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_my_clipboard/models/hotkey.model.dart';
+import 'package:flutter_my_clipboard/services/box/boxes.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
 import '../app/app.notification.dart';
 import '../hotkey/keyboard_simulator.dart';
@@ -13,9 +14,9 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
   ClipManager clipManager = ClipManager();
   late List<HotKey> _registeredHotKeyList;
   List<HotKey> get registeredHotKeyList => _registeredHotKeyList;
-
+  static bool hotKeyTriggered = false;
   @override
-  late String boxName = "hotkeys";
+  late String boxName = "hotKeyBox";
 
   Future<bool> saveHotKey(HotKey key, String clipId, String title) async {
     if (await _registerHotKey(key)) {
@@ -75,6 +76,7 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     //Check if key is registred again clip then copy and past textbuildHotKey(key)
     var model = list.where((k) => k.id == key.identifier).first;
     var clip = clipManager.getClipById(model.clipId);
+    hotKeyTriggered = true;
     ClipboardData data = ClipboardData(text: clip.copiedText);
     await Clipboard.setData(data);
     await Future.delayed(const Duration(milliseconds: 500));
@@ -89,7 +91,8 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     this.clipManager = clipManager;
     _registeredHotKeyList = [];
     await hotKeyManager.unregisterAll();
-    await loadBox();
+    //await loadBox();
+    box = Boxes.hotKeyBox;
     await _loadPopupKey();
     await _loadSavedKeys();
     // refresh();

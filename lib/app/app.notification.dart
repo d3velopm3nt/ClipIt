@@ -19,7 +19,7 @@ class AppNotification{
                          const Duration(milliseconds: 300),
                       animationReverseDuration:
                          const Duration(milliseconds: 600),
-                      duration: const Duration(seconds: 2)); 
+                      duration: const Duration(seconds: 5)); 
   }
 
     static errorNotifcation(String title,String? subtitle){

@@ -9,6 +9,7 @@ import '../services/settings_service.dart';
 
 class ClipboardClearSetting extends SettingsSection {
   late ClipManager manager;
+  bool isLoading = false;
   SettingsService settingProvider = SettingsService();
   ClipboardClearSetting({Key? key}) : super(key: key, tiles: []);
 
@@ -44,11 +45,13 @@ class ClipboardClearSetting extends SettingsSection {
       SettingsTile.switchTile(
           leading: const Icon(Icons.delete),
           initialValue: null,
-          trailing: IconButton(
-            tooltip: 'Delete Clips',
-            icon: const Icon(Icons.delete_forever, color: Colors.red),
-            onPressed: () => {_delete(context)},
-          ),
+          trailing: isLoading
+              ? const CircularProgressIndicator()
+              : IconButton(
+                  tooltip: 'Delete Clips',
+                  icon: const Icon(Icons.delete_forever, color: Colors.red),
+                  onPressed: () => {_delete(context)},
+                ),
           onToggle: (value) {},
           title: const TitleDesc(
               title: 'Delete All Clips',
@@ -63,7 +66,9 @@ class ClipboardClearSetting extends SettingsSection {
         builder: (BuildContext ctx) {
           return ConfirmDailog(
               onConfirm: (confirm) async => {
-                    if (confirm) {manager.deleteClips()}
+                    isLoading = true,
+                    if (confirm)
+                      {isLoading = await manager.deleteClips() ? false : false}
                   });
         });
   }
@@ -74,7 +79,7 @@ class ClipboardClearSetting extends SettingsSection {
   }
 
   void showQuickSelect(bool value) async {
-     settingProvider.showQuickSelect(value);
+    settingProvider.showQuickSelect(value);
     await settingProvider.saveSettings();
   }
 }

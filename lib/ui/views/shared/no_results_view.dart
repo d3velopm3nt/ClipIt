@@ -21,7 +21,10 @@ class _NoResultsViewState extends State<NoResultsView> {
           //title
           _buildImage(widget.image),
           Text(widget.title,style: const TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700)),
-          Text(widget.description as String,textAlign: TextAlign.center,)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(widget.description as String,textAlign: TextAlign.center,),
+          )
           ],
 
       ),

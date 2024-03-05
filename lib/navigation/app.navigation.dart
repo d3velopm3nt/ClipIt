@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/ui/views/clip/clip_manager_view.dart';
 import 'package:flutter_my_clipboard/ui/views/intro/intro_view.dart';
 
+import '../ui/views/hive_view.dart';
 import '../ui/views/quick_view.dart';
 import '../ui/views/settings_view.dart';
 
@@ -25,6 +26,9 @@ class AppNavigation {
         break;
       case AppRoutes.intro:
         page = const IntroView();
+        break;
+      case AppRoutes.hive:
+        page = const HiveView();
         break;
       case AppRoutes.home:
       default:
@@ -52,4 +56,5 @@ class AppRoutes {
   static const String intro = "/intro";
   static const String settings = "/settings";
   static const String quickSelect = "/quickselect";
+  static const String hive = "/hive";
 }

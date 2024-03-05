@@ -1,0 +1,42 @@
+import 'package:flutter_my_clipboard/models/clipitem.model.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:hotkey_manager/hotkey_manager.dart';
+
+import '../../models/cliptag.model.dart';
+import '../../models/hotkey.model.dart';
+import '../../settings/models/settings.model.dart';
+
+class Boxes{
+
+  static Box<ClipItem> get clipsBox => Hive.box<ClipItem>("clipBox");
+  static Box<ClipTag> get tagsBox => Hive.box<ClipTag>("tagBox");
+  static Box<HotKey> get hotKeyBox => Hive.box<HotKey>("hotKeyBox");
+  static Box<SettingsModel> get settingsBox => Hive.box<SettingsModel>("settingsBox");
+
+  static Future<void> load() async{
+      //Start Hive
+  await Hive.initFlutter();
+  Hive.registerAdapter(ClipItemAdapter());
+  Hive.registerAdapter(ClipTagAdapter());
+  Hive.registerAdapter(HotKeyAdapter());
+  Hive.registerAdapter(SettingsAdapter());
+  await Hive.openBox<ClipItem>("clipBox");
+  await Hive.openBox<ClipTag>("tagBox");
+  await Hive.openBox<HotKey>("hotKeyBox");
+  await Hive.openBox<SettingsModel>("settingsBox");
+
+  }
+
+  static Map<Box<dynamic>, dynamic Function(dynamic json)> get allBoxes =>{
+    clipsBox: (json) => ClipItem.fromJson(json),
+    tagsBox: (json) => ClipTag.fromJson(json),
+    hotKeyBox: (json) => HotKey.fromJson(json),
+    settingsBox: (json) => SettingsModel.fromJson(json),
+  };
+
+// Clear all boxes
+  static Future<void> clearAllBoxes() async {
+    // await clipsBox.clear();
+    // await tagsBox.clear();
+  }
+}

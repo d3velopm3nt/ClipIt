@@ -23,7 +23,8 @@ class _HotKeyItemState extends State<HotKeyItem> {
   @override
   Widget build(BuildContext context) {
     hotkeyService = Provider.of<HotKeyService>(context);
-    return PreferenceListItem(
+    return
+    PreferenceListItem(
       onTap: () {
         _handleClickRegisterNewHotKey(context);
       },

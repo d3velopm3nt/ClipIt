@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
+import '../../navigation/app.navigation.dart';
 import '../../ui/widgets/shared/title_desc_widget.dart';
 
 class ApplicationSettings extends SettingsSection {
@@ -64,8 +65,23 @@ class ApplicationSettings extends SettingsSection {
           enableLaunchAtStartup(value);
         },
         onPressed: (context) => {},
+      ),
+      SettingsTile.switchTile(title: const TitleDesc(
+        title: 'Database Viewer',
+        description: 'View and edit the data manually'),
+        onToggle: (value) {},
+        initialValue: null,
+        trailing: IconButton(
+            icon: const Icon(Icons.list_alt_outlined),
+            onPressed: () {
+              navigateToHiveUI();
+            }),
       )
     ]);
+  }
+
+  navigateToHiveUI(){
+    AppNavigation.navigateToRoute(AppRoutes.hive);
   }
 
   savePinWindow(bool value) async {

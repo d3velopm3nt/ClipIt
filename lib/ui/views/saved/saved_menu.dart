@@ -36,10 +36,10 @@ class _SavedMenuState extends State<SavedMenu> {
                  navigation.pageLoading(true);
               ClipNavigation.navigateToRoute(SavedRoutes.hotkeys);
             }),
-        // AppMenuItem(
-        //     route: SavedRoutes.groups,
-        //     label: "Groups",
-        //   icon: Icons.space_dashboard, onPressed: () {}),
+        AppMenuItem(
+            route: SavedRoutes.accounts,
+            label: "Accounts",
+          icon: Icons.account_box, onPressed: () {}),
       ]),
     );
   }

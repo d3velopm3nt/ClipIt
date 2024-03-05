@@ -3,6 +3,7 @@ import 'package:hive/hive.dart';
 
 import '../../app/app.notification.dart';
 import 'box_service_interface.dart';
+import 'boxes.dart';
 
 class BoxServiceBase<T> extends ChangeNotifier
     implements BoxServiceInterface<T> {
@@ -12,13 +13,17 @@ class BoxServiceBase<T> extends ChangeNotifier
   @override
   late String boxName;
   List<T> _list = [];
-  @override 
+  @override
   List<T> get list => _list;
 
   @override
   loadBox() async {
-    box = await Hive.openBox<T>(boxName);
+    //box = await Hive.openBox<T>(boxName);
     _list = List<T>.from(box.values.toList());
+  }
+
+  loadList() async {
+     _list = List<T>.from(box.values.toList());
   }
 
   @override
@@ -30,7 +35,7 @@ class BoxServiceBase<T> extends ChangeNotifier
   @override
   Future<void> delete(key) async {
     try {
-    key.delete();
+      key.delete();
       await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(

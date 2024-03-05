@@ -1,34 +1,24 @@
 import 'dart:io';
-
 import 'package:bot_toast/bot_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/services/clip_tag_service.dart';
 import 'package:flutter_my_clipboard/settings/services/settings_service.dart';
 import 'package:flutter_my_clipboard/theme/theme_changer.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:launch_at_startup/launch_at_startup.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:screen_loader/screen_loader.dart';
 import 'package:window_manager/window_manager.dart';
-import 'models/clipitem.model.dart';
-import 'models/cliptag.model.dart';
-import 'models/hotkey.model.dart';
 import 'navigation/navigation_manager.dart';
+import 'services/box/boxes.dart';
 import 'services/clip_manager_service.dart';
 import 'services/hotkey_service.dart';
-import 'settings/models/settings.model.dart';
 import 'ui/views/main_view.dart';
 import 'ui/widgets/shared/app_system_tray.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  //Start Hive
-  await Hive.initFlutter();
-  Hive.registerAdapter(ClipItemAdapter());
-  Hive.registerAdapter(ClipTagAdapter());
-  Hive.registerAdapter(HotKeyAdapter());
-  Hive.registerAdapter(SettingsAdapter());
+  await Boxes.load();
 
   configScreenLoader(
     loader: const AlertDialog(
@@ -55,7 +45,7 @@ void main() async {
   WindowManager.instance.waitUntilReadyToShow().then((_) async {
     WindowManager.instance.hide();
     WindowManager.instance.setTitle("Clippet Desktop");
-     WindowManager.instance.setIcon("assets/app_icon.ico");
+    WindowManager.instance.setIcon("assets/app_icon.ico");
     //Set to frameless window
     // DisplayManager.clipboardView();p
     WindowManager.instance.setSkipTaskbar(true);

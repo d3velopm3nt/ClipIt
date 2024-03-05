@@ -20,7 +20,7 @@ class ClipNavigation {
     currentRoute = name!;
     switch (name) {
       case ClipRoutes.calendar:
-        page = CalendarView();
+        page = const CalendarView();
         break;
       case ClipRoutes.clipCollection:
         page = ClipCollectionView(clips: args["clips"] ,title: args["title"],color: args["color"]);
@@ -82,7 +82,7 @@ class ClipRoutes {
 
 class SavedRoutes {
   static const String favorites = "/saved/favorites";
-  static const String groups = "/saved/groups";
+  static const String accounts = "/saved/accounts";
   static const String hotkeys = "/saved/hotkeys";
   static const String chain = "/saved/chain";
 }

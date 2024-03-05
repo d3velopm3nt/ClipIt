@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/app/app.notification.dart';
+import 'package:flutter_my_clipboard/services/box/boxes.dart';
 import 'package:hive/hive.dart';
 import '../models/cliptag.model.dart';
 
@@ -10,10 +11,11 @@ class ClipTagService extends ChangeNotifier {
   List<ClipTag> get tags => _tags;
 
   loadTags() async {
-    if (!Hive.isBoxOpen(tagBoxName)) {
-      tagBox = await Hive.openBox<ClipTag>(tagBoxName);
-      // await deleteTags();
-    }
+    tagBox = Boxes.tagsBox;
+    // if (!Hive.isBoxOpen(tagBoxName)) {
+    //   tagBox = await Hive.openBox<ClipTag>(tagBoxName);
+    //   // await deleteTags();
+    // }
 
     _tags = List<ClipTag>.from(tagBox.values.toList());
 

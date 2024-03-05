@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_my_clipboard/services/box/box_serice_base.dart';
+import 'package:flutter_my_clipboard/services/box/boxes.dart';
 import 'package:flutter_my_clipboard/settings/contracts/settings_service.interface.dart';
 import 'package:flutter_my_clipboard/settings/models/settings.model.dart';
 import 'package:flutter_my_clipboard/theme/theme_changer.dart';
@@ -16,7 +17,7 @@ class SettingsService extends BoxServiceBase<SettingsModel>
   final Pinned _windowPinned = Pinned();
   Pinned get windowPinned => _windowPinned;
   @override
-  String get boxName => "settings";
+  String get boxName => "settingsBox";
   @override
   SettingsModel get appSettings => _settings;
 
@@ -26,7 +27,9 @@ class SettingsService extends BoxServiceBase<SettingsModel>
   @override
   Future<void> loadSettings(ThemeChanger themeChanger) async {
     if (loaded) return;
-    await loadBox();
+    // await loadBox();
+    box = Boxes.settingsBox;
+    loadList();
     if (list.isNotEmpty) {
       _settings = list.first;
       //dock to side

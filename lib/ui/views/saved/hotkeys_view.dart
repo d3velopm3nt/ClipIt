@@ -40,7 +40,7 @@ class _HotkeysViewState extends State<HotkeysView> {
                 PreferenceListSection(
                   title: const Text('REGISTERED HOTKEY LIST'),
                   children: [
-                    for (var model in hotkeyService.list)
+                    for (var model in hotkeyService.list.take(1))
                     HotKeyItem(model: model)
                   ],
                 ),

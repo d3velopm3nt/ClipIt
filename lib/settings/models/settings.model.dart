@@ -35,4 +35,33 @@ class SettingsModel extends HiveObject {
       this.hideClipboardAfterCopy,
       this.showQuickSelect,
       this.setupDone);
+
+  Map<String, dynamic> toJson() {
+    return {
+      "darkMode": darkMode,
+      "windowMode": windowMode,
+      "primaryColor": primaryColor,
+      "secondaryColor": secondaryColor,
+      "alwaysOnTop": alwaysOnTop,
+      "dockToSide": dockToSide,
+      "launchAtStartup": launchAtStartup,
+      "hideClipboardAfterCopy": hideClipboardAfterCopy,
+      "showQuickSelect": showQuickSelect,
+      "setupDone": setupDone,
+    };
+  }
+
+  factory SettingsModel.fromJson(Map<String, dynamic> json) {
+    return SettingsModel(
+      json["alwaysOnTop"],
+      json["dockToSide"],
+      json["launchAtStartup"],
+      json["darkMode"],
+      json["primaryColor"],
+      json["secondaryColor"],
+      json["hideClipboardAfterCopy"],
+      json["showQuickSelect"],
+      json["setupDone"],
+    );
+  }
 }

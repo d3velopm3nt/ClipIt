@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_my_clipboard/services/box/boxes.dart';
 import 'package:hive_flutter/adapters.dart';
 import '../app/app.notification.dart';
 import '../models/clipitem.model.dart';
@@ -10,26 +11,30 @@ class ClipManager extends ChangeNotifier {
   List<ClipItem> get clips => _clips;
   List<ClipItem> _filteredList = [];
   List<ClipItem> get filteredList => _filteredList;
-
   late Box clipBox;
   final clipBoxName = "clipBox";
-
   ClipItem get latestClip => _clips.sortByLatestDate().first;
 
   loadClipBox() async {
-    //if (!Hive.isBoxOpen(clipBoxName)) {
-    clipBox = await Hive.openBox<ClipItem>(clipBoxName);
+      clipBox = Boxes.clipsBox;
+    // if (!Hive.isBoxOpen(clipBoxName)) {
+    //     clipBox = await Hive.openBox<ClipItem>(clipBoxName);
     // }
 
     _clips = List<ClipItem>.from(clipBox.values.toList());
   }
 
-  deleteClips() async {
-    await clipBox.clear();
+  Future<bool> deleteClips() async {
+    var list = _clips.where((c) => c.tags.isEmpty == true);
+    for (var clip in list) {
+      await clip.delete();
+    }
 
     await refreshClips();
     AppNotification.deleteNotifcation(
         'All Clips Deleted', "Now you need to copy everything again");
+
+    return true;
   }
 
   refreshClips() async {
