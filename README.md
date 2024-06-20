@@ -21,6 +21,9 @@ run command to see if all is well
 Run the windows app using the below command 
 `flutter run -d windows`
 
+Build the windows app in release mode
+`flutter build windows`
+
 
 ## Commands to know
 
