@@ -12,18 +12,17 @@ A clipboard managerr that makes it easy to view all the text you have copied to 
 
 ## Getting Started
 
-install flutter packages 
+install flutter packages using command
+`flutter pub get`
 
 run command to see if all is well
-flutter doctor 
+`flutter doctor` 
 
 Run the windows app using the below command 
-flutter run -d windows
+`flutter run -d windows`
 
 
 ## Commands to know
-Run the windows app using
-flutter run -d windows
 
 Flutter run key commands.
 r Hot reload. 
