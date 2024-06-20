@@ -10,7 +10,7 @@ class Boxes{
 
   static Box<ClipItem> get clipsBox => Hive.box<ClipItem>("clipBox");
   static Box<ClipTag> get tagsBox => Hive.box<ClipTag>("tagBox");
-  static Box<HotKey> get hotKeyBox => Hive.box<HotKey>("hotKeyBox");
+  static Box<HotKeyModel> get hotKeyBox => Hive.box<HotKeyModel>("hotKeyBox");
   static Box<SettingsModel> get settingsBox => Hive.box<SettingsModel>("settingsBox");
 
   static Future<void> load() async{
@@ -20,10 +20,10 @@ class Boxes{
   Hive.registerAdapter(ClipTagAdapter());
   Hive.registerAdapter(HotKeyAdapter());
   Hive.registerAdapter(SettingsAdapter());
-  await Hive.openBox<ClipItem>("clipBox");
-  await Hive.openBox<ClipTag>("tagBox");
-  await Hive.openBox<HotKey>("hotKeyBox");
   await Hive.openBox<SettingsModel>("settingsBox");
+  await Hive.openBox<HotKeyModel>("hotKeyBox");
+  await Hive.openBox<ClipTag>("tagBox");
+  await Hive.openBox<ClipItem>("clipBox");
 
   }
 
