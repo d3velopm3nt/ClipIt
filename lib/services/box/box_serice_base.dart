@@ -44,31 +44,31 @@ class BoxServiceBase<T> extends ChangeNotifier
   }
 
   @override
-  Future<void> save(T) async {
+  Future<void> save(model) async {
     try {
       //await loadBox();
       //Check if key exists
-      if (T.key != null && box.containsKey(T.key)) {
-        T.save();
+      if (model.key != null && box.containsKey(model.key)) {
+        model.save();
       } else {
-        box.add(T);
+        box.add(model);
       }
       await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(
-          "Error saving ${T.toString()}", ex.toString());
+          "Error saving ${model.toString()}", ex.toString());
     }
   }
 
   @override
-  Future<void> update(T) async {
+  Future<void> update(model) async {
     try {
       await loadBox();
-      T.save();
+      model.save();
       await refresh();
     } catch (ex) {
       AppNotification.errorNotifcation(
-          "Error updating ${T.toString()}", ex.toString());
+          "Error updating ${model.toString()}", ex.toString());
     }
   }
 
