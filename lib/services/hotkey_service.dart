@@ -91,7 +91,7 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     this.clipManager = clipManager;
     _registeredHotKeyList = [];
     await hotKeyManager.unregisterAll();
-    //await loadBox();
+    await loadBox();
     box = Boxes.hotKeyBox;
     await _loadPopupKey();
     await _loadSavedKeys();

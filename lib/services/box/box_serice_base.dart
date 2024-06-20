@@ -18,7 +18,7 @@ class BoxServiceBase<T> extends ChangeNotifier
 
   @override
   loadBox() async {
-    //box = await Hive.openBox<T>(boxName);
+    box = await Hive.openBox<T>(boxName);
     _list = List<T>.from(box.values.toList());
   }
 
