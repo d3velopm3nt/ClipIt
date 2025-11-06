@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:settings_ui/settings_ui.dart';
 
+import '../../app/app.notification.dart';
 import '../../services/clip_manager_service.dart';
 import '../../ui/widgets/shared/confirm_dialog.dart';
 import '../../ui/widgets/shared/title_desc_widget.dart';
@@ -18,6 +19,31 @@ class ClipboardClearSetting extends SettingsSection {
     settingProvider = Provider.of<SettingsService>(context);
     manager = Provider.of<ClipManager>(context);
     return SettingsSection(title: const Text('Clipboard Settings'), tiles: [
+      SettingsTile(
+        title: const TitleDesc(
+            title: 'Active Clip Limit',
+            description: 'Maximum number of clips to keep active (older clips are archived)'),
+        leading: const Icon(Icons.archive),
+        trailing: SizedBox(
+          width: 100,
+          child: TextField(
+            keyboardType: TextInputType.number,
+            textAlign: TextAlign.center,
+            controller: TextEditingController(
+                text: settingProvider.appSettings.maxActiveClips.toString()),
+            onChanged: (value) {
+              final newValue = int.tryParse(value);
+              if (newValue != null && newValue > 0) {
+                setMaxActiveClips(newValue);
+              }
+            },
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+            ),
+          ),
+        ),
+      ),
       SettingsTile.switchTile(
         enabled: !settingProvider.appSettings.showQuickSelect,
         title: const TitleDesc(
@@ -42,6 +68,18 @@ class ClipboardClearSetting extends SettingsSection {
         },
         onPressed: (context) => {},
       ),
+      SettingsTile.switchTile(
+          leading: const Icon(Icons.archive),
+          initialValue: null,
+          trailing: IconButton(
+              tooltip: 'Archive Excess Clips',
+              icon: const Icon(Icons.archive_outlined, color: Colors.blue),
+              onPressed: () => {_archiveExcessClips(context)},
+            ),
+          onToggle: (value) {},
+          title: const TitleDesc(
+              title: 'Archive Excess Clips',
+              description: 'Move clips over the active limit to archive')),
       SettingsTile.switchTile(
           leading: const Icon(Icons.delete),
           initialValue: null,
@@ -81,5 +119,30 @@ class ClipboardClearSetting extends SettingsSection {
   void showQuickSelect(bool value) async {
     settingProvider.showQuickSelect(value);
     await settingProvider.saveSettings();
+  }
+
+  void setMaxActiveClips(int value) async {
+    settingProvider.appSettings.maxActiveClips = value;
+    await settingProvider.saveSettings();
+    AppNotification.saveNotification(
+      "Active Clip Limit Updated",
+      "Set to $value clips (older clips will be archived)"
+    );
+  }
+
+  void _archiveExcessClips(BuildContext context) async {
+    final activeClips = manager.clips.length;
+    final limit = settingProvider.appSettings.maxActiveClips;
+
+    if (activeClips <= limit) {
+      AppNotification.infoNotification(
+        "No Clips to Archive",
+        "You have $activeClips clips (limit: $limit)"
+      );
+      return;
+    }
+
+    final clipsToArchive = activeClips - limit;
+    await manager.archiveOldClips(settingProvider);
   }
 }

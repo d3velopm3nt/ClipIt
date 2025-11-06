@@ -67,7 +67,7 @@ class _ClipManagerPageState extends State<ClipManagerPage>
       }
 
       if (!_manager.clips.any((x) => x.copiedText == newText)) {
-        _manager.saveClip(newText);
+        _manager.saveClip(newText, settings: settingService);
         //Show if enabled in settings and not copied from clipboard
         if (settingService.appSettings.showQuickSelect &&
             !AppConfig.copiedFromClipboard) {

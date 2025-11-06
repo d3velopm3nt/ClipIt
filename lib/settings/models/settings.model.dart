@@ -23,6 +23,7 @@ class SettingsModel extends HiveObject {
   factory SettingsModel.hideClipboardAfterCopy(bool value) => SettingsModel('hideClipboardAfterCopy', value);
   factory SettingsModel.showQuickSelect(bool value) => SettingsModel('showQuickSelect', value);
   factory SettingsModel.setupDone(bool value) => SettingsModel('setupDone', value);
+  factory SettingsModel.maxActiveClips(int value) => SettingsModel('maxActiveClips', value);
 
   // Backward compatibility getters/setters for when this is used as a single object
   bool get darkMode => name == 'settings' ? (value as Map<String, dynamic>)['darkMode'] ?? false : false;
@@ -35,6 +36,7 @@ class SettingsModel extends HiveObject {
   bool get hideClipboardAfterCopy => name == 'settings' ? (value as Map<String, dynamic>)['hideClipboardAfterCopy'] ?? false : false;
   bool get showQuickSelect => name == 'settings' ? (value as Map<String, dynamic>)['showQuickSelect'] ?? false : false;
   bool get setupDone => name == 'settings' ? (value as Map<String, dynamic>)['setupDone'] ?? false : false;
+  int get maxActiveClips => name == 'settings' ? (value as Map<String, dynamic>)['maxActiveClips'] ?? 100 : 100;
 
   set darkMode(bool val) => name == 'settings' ? (value as Map<String, dynamic>)['darkMode'] = val : null;
   set windowMode(bool val) => name == 'settings' ? (value as Map<String, dynamic>)['windowMode'] = val : null;
@@ -46,6 +48,7 @@ class SettingsModel extends HiveObject {
   set hideClipboardAfterCopy(bool val) => name == 'settings' ? (value as Map<String, dynamic>)['hideClipboardAfterCopy'] = val : null;
   set showQuickSelect(bool val) => name == 'settings' ? (value as Map<String, dynamic>)['showQuickSelect'] = val : null;
   set setupDone(bool val) => name == 'settings' ? (value as Map<String, dynamic>)['setupDone'] = val : null;
+  set maxActiveClips(int val) => name == 'settings' ? (value as Map<String, dynamic>)['maxActiveClips'] = val : null;
 
   Map<String, dynamic> toJson() {
     return {

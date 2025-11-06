@@ -4,6 +4,7 @@ import 'package:flutter_my_clipboard/services/box/boxes.dart';
 import 'package:hive_flutter/adapters.dart';
 import '../app/app.notification.dart';
 import '../models/clipitem.model.dart';
+import '../settings/services/settings_service.dart';
 import 'datetime_service.dart';
 
 class ClipManager extends ChangeNotifier {
@@ -43,7 +44,7 @@ class ClipManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  saveClip(String text) async {
+  saveClip(String text, {SettingsService? settings}) async {
     var clip = ClipItem(
         text, DateTimeService.currentDate, false, [], _clips.length + 1, false);
     //Add to Hive Box
@@ -53,6 +54,11 @@ class ClipManager extends ChangeNotifier {
       clipBox.add(clip);
     }
     await refreshClips();
+
+    // Archive old clips if settings provided and limit exceeded
+    if (settings != null) {
+      await archiveOldClips(settings);
+    }
   }
 
   updateClipDate(String text) async {
@@ -91,6 +97,62 @@ class ClipManager extends ChangeNotifier {
     //await loadClipBox();
     var clip = _clips.where((c) => c.id.toString() == id);
     return clip.isNotEmpty ? clip.first : null;
+  }
+
+  // Archive functionality
+  Future<void> archiveOldClips(SettingsService settings) async {
+    final maxActive = settings.appSettings.maxActiveClips;
+    if (_clips.length <= maxActive) return;
+
+    // Sort clips by date (newest first) and get clips to archive
+    final sortedClips = _clips.sortByLatestDate();
+    final clipsToArchive = sortedClips.skip(maxActive).toList();
+
+    if (clipsToArchive.isEmpty) return;
+
+    // Move clips to archive box
+    final archiveBox = Boxes.archiveBox;
+    for (var clip in clipsToArchive) {
+      // Remove from active clips
+      await clip.delete();
+      // Add to archive with string key based on ID
+      await archiveBox.put(clip.id.toString(), clip);
+    }
+
+    await refreshClips();
+    AppNotification.infoNotification(
+      'Clips Archived',
+      '${clipsToArchive.length} old clips moved to archive'
+    );
+  }
+
+  List<ClipItem> getArchivedClips() {
+    final archiveBox = Boxes.archiveBox;
+    return List<ClipItem>.from(archiveBox.values.toList()).sortByLatestDate();
+  }
+
+  Future<void> restoreClip(ClipItem archivedClip) async {
+    // Remove from archive
+    final archiveBox = Boxes.archiveBox;
+    await archiveBox.delete(archivedClip.id.toString());
+
+    // Add back to active clips (let Hive assign new key)
+    await clipBox.add(archivedClip);
+
+    await refreshClips();
+    AppNotification.infoNotification(
+      'Clip Restored',
+      'Archived clip restored to active clips'
+    );
+  }
+
+  Future<void> deleteArchivedClip(ClipItem archivedClip) async {
+    final archiveBox = Boxes.archiveBox;
+    await archiveBox.delete(archivedClip.id.toString());
+    AppNotification.deleteNotifcation(
+      'Archived Clip Deleted',
+      'Clip permanently removed from archive'
+    );
   }
 
   List<ClipItem> getByDate(DateTime date) {

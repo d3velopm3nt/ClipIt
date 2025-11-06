@@ -83,6 +83,7 @@ class SettingsService extends BoxServiceBase<SettingsModel>
       'hideClipboardAfterCopy': false,
       'showQuickSelect': false,
       'setupDone': false,
+      'maxActiveClips': 100,
     };
 
     defaults.forEach((key, value) {

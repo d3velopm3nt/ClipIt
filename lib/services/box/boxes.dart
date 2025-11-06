@@ -12,6 +12,7 @@ import '../../settings/models/settings.model.dart';
 class Boxes{
 
   static Box<ClipItem> get clipsBox => Hive.box<ClipItem>("clipBox");
+  static Box<ClipItem> get archiveBox => Hive.box<ClipItem>("archiveBox");
   static Box<ClipTag> get tagsBox => Hive.box<ClipTag>("tagBox");
   static Box<HotKeyModel> get hotKeyBox => Hive.box<HotKeyModel>("hotKeyBox");
   static Box<SettingsModel> get settingsBox => Hive.box<SettingsModel>("settingsBox");
@@ -31,6 +32,7 @@ class Boxes{
       await Hive.openBox<HotKeyModel>("hotKeyBox");
       await Hive.openBox<ClipTag>("tagBox");
       await Hive.openBox<ClipItem>("clipBox");
+      await Hive.openBox<ClipItem>("archiveBox");
 
   }
 
