@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter_my_clipboard/models/clipitem.model.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 import '../../models/cliptag.model.dart';
 import '../../models/hotkey.model.dart';
@@ -14,16 +17,20 @@ class Boxes{
   static Box<SettingsModel> get settingsBox => Hive.box<SettingsModel>("settingsBox");
 
   static Future<void> load() async{
-      //Start Hive
-  await Hive.initFlutter();
-  Hive.registerAdapter(ClipItemAdapter());
-  Hive.registerAdapter(ClipTagAdapter());
-  Hive.registerAdapter(HotKeyAdapter());
-  Hive.registerAdapter(SettingsAdapter());
-  await Hive.openBox<SettingsModel>("settingsBox");
-  await Hive.openBox<HotKeyModel>("hotKeyBox");
-  await Hive.openBox<ClipTag>("tagBox");
-  await Hive.openBox<ClipItem>("clipBox");
+      //Start Hive with custom directory
+      final appDocumentDir = await getApplicationDocumentsDirectory();
+      final clipitDir = Directory(path.join(appDocumentDir.path, 'ClipIt'));
+      await clipitDir.create(recursive: true);
+      await Hive.initFlutter(clipitDir.path);
+
+      Hive.registerAdapter(ClipItemAdapter());
+      Hive.registerAdapter(ClipTagAdapter());
+      Hive.registerAdapter(HotKeyAdapter());
+      Hive.registerAdapter(SettingsAdapter());
+      await Hive.openBox<SettingsModel>("settingsBox");
+      await Hive.openBox<HotKeyModel>("hotKeyBox");
+      await Hive.openBox<ClipTag>("tagBox");
+      await Hive.openBox<ClipItem>("clipBox");
 
   }
 
