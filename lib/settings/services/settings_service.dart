@@ -12,14 +12,23 @@ import '../../models/pinned.model.dart';
 
 class SettingsService extends BoxServiceBase<SettingsModel>
     implements SettingsServiceInterface {
-  late SettingsModel _settings;
+  final Map<String, dynamic> _settings = {};
   bool loaded = false;
   final Pinned _windowPinned = Pinned();
   Pinned get windowPinned => _windowPinned;
   @override
   String get boxName => "settingsBox";
-  @override
-  SettingsModel get appSettings => _settings;
+
+  // Create a computed SettingsModel for backward compatibility
+  SettingsModel get appSettings => SettingsModel('settings', _settings);
+
+  T _getSetting<T>(String name, T defaultValue) {
+    return _settings[name] ?? defaultValue;
+  }
+
+  void _setSetting(String name, dynamic value) {
+    _settings[name] = value;
+  }
 
   //SettingChanger settingChanger = SettingChanger();
   //ThemeChanger themeChanger = ThemeChanger();
@@ -30,38 +39,85 @@ class SettingsService extends BoxServiceBase<SettingsModel>
     // await loadBox();
     box = Boxes.settingsBox;
     loadList();
-    if (list.isNotEmpty) {
-      _settings = list.first;
-      //dock to side
-      _settings.dockToSide ? dockToSide() : null;
-      // // windows mode
-      _settings.alwaysOnTop ? pinWindow() : null;
-      // Launch At Startup
-      launchAtStartup(_settings.launchAtStartup);
-      //Enable Window Mode
-      enableWindowMode(_settings.windowMode);
 
-      // dark mode
-      themeChanger.setDarkMode(_settings.darkMode);
-      // primary color
-      if (_settings.primaryColor != 0) {
-        themeChanger.setPrimaryColor(Color(_settings.primaryColor));
-      }
-      // second color
-      if (_settings.secondaryColor != 0) {
-        themeChanger.setSecondColor(Color(_settings.secondaryColor));
-      }
-    } else {
-      _settings =
-          SettingsModel(false, true, false, false, 0, 0, false, false, false);
-      await save(_settings);
+    // Load all settings from the box into the map
+    for (var setting in list) {
+      _settings[setting.name] = setting.value;
     }
+
+    // Apply default values for missing settings
+    _ensureDefaultSettings();
+
+    //dock to side
+    if (_getSetting('dockToSide', true)) _dockToSide();
+    // windows mode
+    if (_getSetting('alwaysOnTop', false)) pinWindow();
+    // Launch At Startup
+    _launchAtStartup(_getSetting('launchAtStartup', false));
+    //Enable Window Mode
+    enableWindowMode(_getSetting('windowMode', false));
+
+    // dark mode
+    themeChanger.setDarkMode(_getSetting('darkMode', false));
+    // primary color
+    if (_getSetting('primaryColor', 0) != 0) {
+      themeChanger.setPrimaryColor(Color(_getSetting('primaryColor', 0)));
+    }
+    // second color
+    if (_getSetting('secondaryColor', 0) != 0) {
+      themeChanger.setSecondColor(Color(_getSetting('secondaryColor', 0)));
+    }
+
     loaded = true;
+  }
+
+  void _ensureDefaultSettings() {
+    final defaults = {
+      'darkMode': false,
+      'windowMode': false,
+      'primaryColor': 0,
+      'secondaryColor': 0,
+      'alwaysOnTop': false,
+      'dockToSide': true,
+      'launchAtStartup': false,
+      'hideClipboardAfterCopy': false,
+      'showQuickSelect': false,
+      'setupDone': false,
+    };
+
+    defaults.forEach((key, value) {
+      if (!_settings.containsKey(key)) {
+        _settings[key] = value;
+      }
+    });
   }
 
   @override
   Future<void> saveSettings() async {
-    await save(appSettings);
+    // Save all current settings to the box
+    for (var entry in _settings.entries) {
+      var existingSetting = list.where((s) => s.name == entry.key).toList();
+      if (existingSetting.isNotEmpty) {
+        existingSetting.first.value = entry.value;
+        await existingSetting.first.save();
+      } else {
+        var newSetting = SettingsModel(entry.key, entry.value);
+        await save(newSetting);
+      }
+    }
+  }
+
+  Future<void> saveSetting(String name, dynamic value) async {
+    _settings[name] = value;
+
+    var existingSetting = list.where((s) => s.name == name).toList();
+    if (existingSetting.isNotEmpty) {
+      existingSetting.first.value = value;
+      await existingSetting.first.save();
+    } else {
+      var newSetting = SettingsModel(name, value);
+      await save(newSetting);
+    }
   }
 
   pinWindow() {
@@ -81,12 +137,11 @@ class SettingsService extends BoxServiceBase<SettingsModel>
       _windowPinned.state = false;
       _windowPinned.tooltip = "Pin to Top";
     }
-    appSettings.alwaysOnTop = _windowPinned.state;
-    await saveSettings();
+    await saveSetting('alwaysOnTop', _windowPinned.state);
   }
 
   enableWindowMode(bool enabled) async {
-    appSettings.windowMode = enabled;
+    await saveSetting('windowMode', enabled);
     enabled
         ? WindowManager.instance.setTitleBarStyle(TitleBarStyle.normal)
         : await WindowManager.instance.setAsFrameless();
@@ -94,6 +149,10 @@ class SettingsService extends BoxServiceBase<SettingsModel>
   }
 
   dockToSide() async {
+    await _dockToSide();
+  }
+
+  _dockToSide() async {
     var display = await screenRetriever.getPrimaryDisplay();
     //await WindowManager.instance.setAsFrameless();
     await WindowManager.instance.setSize(Size(350, display.size.height - 40));
@@ -103,7 +162,11 @@ class SettingsService extends BoxServiceBase<SettingsModel>
   }
 
   launchAtStartup(bool value) async {
-    appSettings.launchAtStartup = value;
+    await _launchAtStartup(value);
+  }
+
+  _launchAtStartup(bool value) async {
+    await saveSetting('launchAtStartup', value);
     value
         ? LaunchAtStartup.instance.enable()
         : LaunchAtStartup.instance.disable();
@@ -111,12 +174,16 @@ class SettingsService extends BoxServiceBase<SettingsModel>
   }
 
   enableHideClipboard(bool value) async {
-    appSettings.hideClipboardAfterCopy = value;
+    await saveSetting('hideClipboardAfterCopy', value);
     notifyListeners();
   }
 
   showQuickSelect(bool value) async {
-    appSettings.showQuickSelect = value;
+    await _showQuickSelect(value);
+  }
+
+  _showQuickSelect(bool value) async {
+    await saveSetting('showQuickSelect', value);
     notifyListeners();
   }
 }
