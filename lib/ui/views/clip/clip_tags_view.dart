@@ -23,19 +23,71 @@ class _ClipTagsViewState extends State<ClipTagsView> {
   late ClipTagService tagManager;
   ViewState currentState = ViewState.list;
   ClipTag editTag = ClipTag("", "", 0, "");
+  final filterController = TextEditingController();
+  List<ClipTag> filteredTags = [];
   @override
   void initState() {
     super.initState();
+    filteredTags = [];
+  }
+
+  void filterTags(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredTags = tagManager.tags;
+      } else {
+        filteredTags = tagManager.tags
+            .where((tag) =>
+                tag.label.toLowerCase().contains(query.toLowerCase()))
+            .toList();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     tagManager = Provider.of<ClipTagService>(context);
     final clipManager = Provider.of<ClipManager>(context);
+    // Update filtered tags when tags change
+    if (filterController.text.isEmpty) {
+      filteredTags = tagManager.tags;
+    } else {
+      filteredTags = tagManager.tags
+          .where((tag) =>
+              tag.label.toLowerCase().contains(filterController.text.toLowerCase()))
+          .toList();
+    }
     return Center(
         child: Padding(
             padding: const EdgeInsets.all(5),
             child: Column(children: [
+              //Filter Tags
+              Visibility(
+                visible: currentState == ViewState.list ? true : false,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: 40,
+                    child: TextField(
+                      controller: filterController,
+                      onChanged: (text) {
+                        filterTags(text);
+                      },
+                      decoration: const InputDecoration(
+                          labelText: "Search for tags...",
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                              //Outline border type for TextField
+                              borderRadius: BorderRadius.all(Radius.circular(20)),
+                              borderSide: BorderSide(
+                                color: Color.fromARGB(255, 104, 99, 99),
+                                width: 3,
+                              ))),
+                    ),
+                  ),
+                ),
+              ),
+              const Divider(),
               //Add New Tag
               Visibility(
                   visible: currentState == ViewState.list ? true : false,
@@ -49,10 +101,10 @@ class _ClipTagsViewState extends State<ClipTagsView> {
                   )),
               //Tag List
               Visibility(
-                visible: (currentState == ViewState.list && tagManager.tags.isNotEmpty),
+                visible: (currentState == ViewState.list && filteredTags.isNotEmpty),
                 child: Expanded(
                     child: ListView(shrinkWrap: true, children: [
-                  ...tagManager.tags.map((tag) => TagCard(
+                  ...filteredTags.map((tag) => TagCard(
                         tag: tag,
                         showClips: false,
                         onPressed: (tag) {
@@ -87,6 +139,16 @@ class _ClipTagsViewState extends State<ClipTagsView> {
                       title: "No Tags Created",
                       description:
                           "Add new tags to assign to clippets"),
+                ),
+              ),
+              Visibility(
+                visible: (currentState == ViewState.list && filteredTags.isEmpty && tagManager.tags.isNotEmpty),
+                child: Expanded(
+                  child: NoResultsView(
+                      image: "intro/tag.png",
+                      title: "No tags match your search",
+                      description:
+                          "Try a different search term"),
                 ),
               ),
               //Tag Setup
