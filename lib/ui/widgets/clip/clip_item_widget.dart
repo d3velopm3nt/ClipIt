@@ -19,7 +19,7 @@ import '../shared/record_hotkey_dialog.dart';
 import '../tag/tag_badge_widget.dart';
 
 // This is the type used by the popup menu below.
-enum Menu { favorite, tag, group, delete, hotkey, secure }
+enum Menu { favorite, tag, group, delete, hotkey, secure, edit }
 
 class ClipItemWidget extends StatelessWidget {
   final ClipItem clip;
@@ -204,9 +204,16 @@ class ClipItemWidget extends StatelessWidget {
                   case Menu.secure:
                     updateSecure();
                     break;
+                  case Menu.edit:
+                    _editClipText(context);
+                    break;
                 }
               },
               itemBuilder: (BuildContext context) => <PopupMenuEntry<Menu>>[
+                    PopupMenuItem<Menu>(
+                      value: Menu.edit,
+                      child: buildMenuItem('Edit', Icons.edit, null),
+                    ),
                     PopupMenuItem<Menu>(
                       value: Menu.favorite,
                       child:
@@ -263,6 +270,50 @@ class ClipItemWidget extends StatelessWidget {
                       "${hotKey?.modifiers[0]} + ${hotKey?.keyCode.replaceAll("key", "")}")),
         ],
       ),
+    );
+  }
+
+  Future<void> _editClipText(BuildContext context) async {
+    final TextEditingController textController = TextEditingController(text: clip.copiedText);
+
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Clip Text'),
+          content: TextField(
+            controller: textController,
+            maxLines: 8,
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              hintText: 'Enter clip text...',
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Save'),
+              onPressed: () async {
+                if (textController.text.trim().isNotEmpty) {
+                  clip.copiedText = textController.text.trim();
+                  await manager.updateClip(clip);
+                  AppNotification.saveNotification(
+                    "Clip updated",
+                    "The clip text has been successfully updated"
+                  );
+                }
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
