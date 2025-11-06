@@ -47,8 +47,12 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
   }
 
   Future<bool> _registerHotKey(HotKey key) async {
-    if (!hotKeyManager.registeredHotKeyList
-        .any((element) => element.keyCode == key.keyCode)) {
+    // Check if the exact hotkey combination (keyCode + modifiers) is already registered
+    bool isAlreadyRegistered = hotKeyManager.registeredHotKeyList.any((element) =>
+        element.keyCode == key.keyCode &&
+        _modifiersEqual(element.modifiers ?? [], key.modifiers ?? []));
+
+    if (!isAlreadyRegistered) {
       await hotKeyManager.register(
         key,
         keyDownHandler: _keyDownHandler,
@@ -57,10 +61,16 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
       return true;
     } else {
       AppNotification.warningNotification(
-          "Key already assign to another action",
+          "Key combination already assigned to another action",
           "No hot key was created, please try another combination");
       return false;
     }
+  }
+
+  bool _modifiersEqual(List<KeyModifier> list1, List<KeyModifier> list2) {
+    if (list1.length != list2.length) return false;
+    return list1.every((modifier) => list2.contains(modifier)) &&
+           list2.every((modifier) => list1.contains(modifier));
   }
 
   HotKeyModel? getHotKeyByClipId(String id) {
