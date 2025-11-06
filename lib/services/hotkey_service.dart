@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_my_clipboard/models/clipitem.model.dart';
 import 'package:flutter_my_clipboard/models/hotkey.model.dart';
 import 'package:flutter_my_clipboard/services/box/boxes.dart';
 import 'package:hotkey_manager/hotkey_manager.dart';
@@ -76,6 +77,10 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     //Check if key is registred again clip then copy and past textbuildHotKey(key)
     var model = list.where((k) => k.id == key.identifier).first;
     var clip = clipManager.getClipById(model.clipId);
+    if (clip == null) {
+      // Clip no longer exists, ignore the hotkey
+      return;
+    }
     hotKeyTriggered = true;
     ClipboardData data = ClipboardData(text: clip.copiedText);
     await Clipboard.setData(data);
@@ -83,7 +88,7 @@ class HotKeyService extends BoxServiceBase<HotKeyModel> {
     KeyboardSimulator.paste();
   }
 
-  getHotkeyClip(String id) {
+  ClipItem? getHotkeyClip(String id) {
     return clipManager.getClipById(id);
   }
 

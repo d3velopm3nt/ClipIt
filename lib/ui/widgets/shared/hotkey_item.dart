@@ -40,8 +40,21 @@ class _HotKeyItemState extends State<HotKeyItem> {
       ),
       bottomView: Visibility(
         visible: true,
-        child: ClipItemWidget(
-            clip: hotkeyService.getHotkeyClip(widget.model.clipId)),
+        child: hotkeyService.getHotkeyClip(widget.model.clipId) != null
+            ? ClipItemWidget(
+                clip: hotkeyService.getHotkeyClip(widget.model.clipId)!)
+            : Container(
+                padding: const EdgeInsets.all(16),
+                child: const Center(
+                  child: Text(
+                    "Associated clip no longer exists",
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ),
+              ),
       ),
     );
   }

@@ -87,10 +87,10 @@ class ClipManager extends ChangeNotifier {
     await refreshClips();
   }
 
-  ClipItem getClipById(String id) {
+  ClipItem? getClipById(String id) {
     //await loadClipBox();
     var clip = _clips.where((c) => c.id.toString() == id);
-    return clip.first;
+    return clip.isNotEmpty ? clip.first : null;
   }
 
   List<ClipItem> getByDate(DateTime date) {
