@@ -102,11 +102,14 @@ class ClipManager extends ChangeNotifier {
   // Archive functionality
   Future<void> archiveOldClips(SettingsService settings) async {
     final maxActive = settings.appSettings.maxActiveClips;
-    if (_clips.length <= maxActive) return;
 
-    // Sort clips by date (newest first) and get clips to archive
-    final sortedClips = _clips.sortByLatestDate();
-    final clipsToArchive = sortedClips.skip(maxActive).toList();
+    // Only archive clips that have no tags
+    final untaggedClips = _clips.where((clip) => clip.tags.isEmpty).toList();
+    if (untaggedClips.length <= maxActive) return;
+
+    // Sort untagged clips by date (newest first) and get clips to archive
+    final sortedUntaggedClips = untaggedClips.sortByLatestDate();
+    final clipsToArchive = sortedUntaggedClips.skip(maxActive).toList();
 
     if (clipsToArchive.isEmpty) return;
 
@@ -120,9 +123,13 @@ class ClipManager extends ChangeNotifier {
     }
 
     await refreshClips();
+
+    // Update filtered archived clips to reflect the changes
+    _filteredArchivedClips = getArchivedClips();
+
     AppNotification.infoNotification(
-      'Clips Archived',
-      '${clipsToArchive.length} old clips moved to archive'
+      'Untagged Clips Archived',
+      '${clipsToArchive.length} old untagged clips moved to archive'
     );
   }
 
@@ -140,6 +147,10 @@ class ClipManager extends ChangeNotifier {
     await clipBox.add(archivedClip);
 
     await refreshClips();
+
+    // Update filtered archived clips to reflect the restoration
+    _filteredArchivedClips = getArchivedClips();
+
     AppNotification.infoNotification(
       'Clip Restored',
       'Archived clip restored to active clips'
@@ -149,9 +160,38 @@ class ClipManager extends ChangeNotifier {
   Future<void> deleteArchivedClip(ClipItem archivedClip) async {
     final archiveBox = Boxes.archiveBox;
     await archiveBox.delete(archivedClip.id.toString());
+
+    // Update filtered archived clips to reflect the deletion
+    _filteredArchivedClips = getArchivedClips();
+
     AppNotification.deleteNotifcation(
       'Archived Clip Deleted',
       'Clip permanently removed from archive'
+    );
+  }
+
+  Future<void> clearAllArchivedClips() async {
+    final archiveBox = Boxes.archiveBox;
+    final archivedClips = archiveBox.values.toList();
+
+    if (archivedClips.isEmpty) {
+      AppNotification.infoNotification(
+        'No Archived Clips',
+        'There are no archived clips to delete'
+      );
+      return;
+    }
+
+    // Delete all archived clips
+    await archiveBox.clear();
+
+    // Refresh the archived clips list
+    _filteredArchivedClips = getArchivedClips();
+    notifyListeners();
+
+    AppNotification.deleteNotifcation(
+      'Archive Cleared',
+      '${archivedClips.length} archived clips permanently deleted'
     );
   }
 

@@ -1,6 +1,7 @@
 import 'package:expandable_text/expandable_text.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../../app/app.notification.dart';
 import '../../../navigation/navigation_manager.dart';
 import '../../../services/clip_manager_service.dart';
 import '../../../services/clip_tag_service.dart';
@@ -70,77 +71,94 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
     return Center(
         child: Column(
       children: [
-        TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Active Clips'),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.blue.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      manager.filteredList.length.toString(),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.blue,
+        Consumer<ClipManager>(
+          builder: (context, manager, child) => TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Active Clips'),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        manager.filteredList.length.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.blue,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Tab(
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Text('Archived'),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: Colors.grey.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Text(
-                      manager.getFilteredArchivedClips().length.toString(),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey,
+              Tab(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text('Archived'),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Text(
+                        manager.getFilteredArchivedClips().length.toString(),
+                        style: const TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
         Padding(
           padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            height: 40,
-            child: TextField(
-              controller: searchController,
-              onChanged: _performSearch,
-              decoration: const InputDecoration(
-                  labelText: "Search for clips...",
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                      //Outline border type for TextFeild
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      borderSide: BorderSide(
-                        color: Color.fromARGB(255, 104, 99, 99),
-                        width: 3,
-                      ))),
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: SizedBox(
+                  height: 40,
+                  child: TextField(
+                    controller: searchController,
+                    onChanged: _performSearch,
+                    decoration: const InputDecoration(
+                        labelText: "Search for clips...",
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(
+                            //Outline border type for TextFeild
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                            borderSide: BorderSide(
+                              color: Color.fromARGB(255, 104, 99, 99),
+                              width: 3,
+                            ))),
+                  ),
+                ),
+              ),
+              if (_currentTabIndex == 1) ...[
+                const SizedBox(width: 8),
+                IconButton(
+                  onPressed: () => _showClearArchiveConfirmation(context),
+                  icon: const Icon(Icons.delete_sweep, color: Colors.red),
+                  tooltip: 'Clear all archived clips',
+                  splashRadius: 20,
+                ),
+              ],
+            ],
           ),
         ),
         const Divider(),
@@ -358,6 +376,45 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
                 manager.searchArchivedClips(searchController.text);
               },
               child: const Text('Delete'),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showClearArchiveConfirmation(BuildContext context) {
+    final archivedCount = manager.getArchivedClips().length;
+
+    if (archivedCount == 0) {
+      AppNotification.infoNotification(
+        'No Archived Clips',
+        'There are no archived clips to clear'
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Clear All Archived Clips'),
+          content: Text('Are you sure you want to permanently delete all $archivedCount archived clips? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Provider.of<ClipManager>(context, listen: false).clearAllArchivedClips();
+                // Clear search and refresh
+                searchController.clear();
+                manager.searchArchivedClips('');
+              },
+              child: const Text('Clear All'),
               style: TextButton.styleFrom(foregroundColor: Colors.red),
             ),
           ],
