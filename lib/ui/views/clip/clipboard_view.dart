@@ -24,6 +24,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
   ClipTagService tagManager = ClipTagService();
   late ClipManager manager;
   int _currentTabIndex = 0;
+  bool _archivedInitialized = false;
 
   @override
   void initState() {
@@ -68,6 +69,17 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
     manager = Provider.of<ClipManager>(context);
     tagManager = Provider.of<ClipTagService>(context);
     //hotKeyService = Provider.of<HotKeyService>(context);
+
+    // Initialize archived clips count on first build if not already done
+    if (!_archivedInitialized) {
+      _archivedInitialized = true;
+      // Initialize archived clips for the counter to show immediately
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          manager.searchArchivedClips('');
+        }
+      });
+    }
     return Center(
         child: Column(
       children: [
