@@ -186,6 +186,24 @@ class ClipManager extends ChangeNotifier {
         .toList();
     notifyListeners();
   }
+
+  List<ClipItem> _filteredArchivedClips = [];
+
+  searchArchivedClips(String searchText) async {
+    if (searchText.isEmpty) {
+      _filteredArchivedClips = getArchivedClips();
+    } else {
+      _filteredArchivedClips = getArchivedClips()
+          .where((x) =>
+              x.copiedText.toLowerCase().contains(searchText.toLowerCase()))
+          .toList();
+    }
+    notifyListeners();
+  }
+
+  List<ClipItem> getFilteredArchivedClips() {
+    return _filteredArchivedClips;
+  }
 }
 
 extension Sorting on List<ClipItem> {

@@ -21,11 +21,39 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
   final navigation = NavigationManager();
   late TabController _tabController;
   ClipTagService tagManager = ClipTagService();
+  late ClipManager manager;
+  int _currentTabIndex = 0;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(_onTabChanged);
+  }
+
+  void _onTabChanged() {
+    setState(() {
+      _currentTabIndex = _tabController.index;
+    });
+    // Clear search when switching tabs
+    searchController.clear();
+
+    // Initialize archived clips if switching to archived tab
+    if (_currentTabIndex == 1) {
+      manager.searchArchivedClips('');
+    } else {
+      _performSearch('');
+    }
+  }
+
+  void _performSearch(String text) {
+    if (_currentTabIndex == 0) {
+      // Active clips tab
+      manager.searchClips(text);
+    } else {
+      // Archived clips tab
+      manager.searchArchivedClips(text);
+    }
   }
 
   @override
@@ -36,7 +64,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
-    var manager = Provider.of<ClipManager>(context);
+    manager = Provider.of<ClipManager>(context);
     tagManager = Provider.of<ClipTagService>(context);
     //hotKeyService = Provider.of<HotKeyService>(context);
     return Center(
@@ -44,9 +72,55 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
       children: [
         TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Active Clips'),
-            Tab(text: 'Archived Clips'),
+          tabs: [
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Active Clips'),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      manager.filteredList.length.toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.blue,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Tab(
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text('Archived'),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.withOpacity(0.3),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      manager.getFilteredArchivedClips().length.toString(),
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
         Padding(
@@ -55,9 +129,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
             height: 40,
             child: TextField(
               controller: searchController,
-              onChanged: ((text) {
-                manager.searchClips(text);
-              }),
+              onChanged: _performSearch,
               decoration: const InputDecoration(
                   labelText: "Search for clips...",
                   prefixIcon: Icon(Icons.search),
@@ -79,7 +151,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
               // Active Clips Tab
               _buildClipList(manager.filteredList, "No clippets saved", "Copy something to add it to your clipboard"),
               // Archived Clips Tab
-              _buildArchivedClipList(manager.getArchivedClips()),
+              _buildArchivedClipList(manager.getFilteredArchivedClips()),
             ],
           ),
         )
@@ -112,6 +184,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
   }
 
   Widget _buildArchivedClipList(List archivedClips) {
+    final hasSearchText = searchController.text.isNotEmpty;
     return Column(
       children: [
         Visibility(
@@ -127,8 +200,10 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
           child: Expanded(
             child: NoResultsView(
                 image: "intro/copy.png",
-                title: "No archived clips",
-                description: "Archived clips will appear here when the active clip limit is exceeded"),
+                title: hasSearchText ? "No archived clips match your search" : "No archived clips",
+                description: hasSearchText
+                    ? "Try a different search term"
+                    : "Archived clips will appear here when the active clip limit is exceeded"),
           ),
         )
       ],
@@ -153,10 +228,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
                     child: Column(
                       children: [
                         IconButton(
-                          onPressed: () {
-                            // Restore clip to active
-                            Provider.of<ClipManager>(context, listen: false).restoreClip(clip);
-                          },
+                          onPressed: () => _showRestoreConfirmation(context, clip),
                           icon: const Icon(Icons.restore),
                           splashRadius: 20,
                           tooltip: 'Restore clip',
@@ -227,9 +299,7 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
                           iconSize: 20,
                           splashRadius: 20,
                           color: Colors.grey,
-                          onPressed: () {
-                            Provider.of<ClipManager>(context, listen: false).deleteArchivedClip(clip);
-                          },
+                          onPressed: () => _showDeleteConfirmation(context, clip),
                         )
                       ],
                     ),
@@ -239,5 +309,60 @@ class _ClipboardViewState extends State<ClipboardView> with TickerProviderStateM
             ),
           ],
         ));
+  }
+
+  void _showRestoreConfirmation(BuildContext context, clip) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Restore Clip'),
+          content: const Text('Are you sure you want to restore this clip to active clips?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Provider.of<ClipManager>(context, listen: false).restoreClip(clip);
+                // Refresh archived clips to update the list immediately
+                manager.searchArchivedClips(searchController.text);
+              },
+              child: const Text('Restore'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmation(BuildContext context, clip) {
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) {
+        return AlertDialog(
+          title: const Text('Delete Archived Clip'),
+          content: const Text('Are you sure you want to permanently delete this archived clip? This action cannot be undone.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                Provider.of<ClipManager>(context, listen: false).deleteArchivedClip(clip);
+                // Refresh archived clips to update the list immediately
+                manager.searchArchivedClips(searchController.text);
+              },
+              child: const Text('Delete'),
+              style: TextButton.styleFrom(foregroundColor: Colors.red),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
